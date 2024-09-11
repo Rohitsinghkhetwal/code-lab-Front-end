@@ -1,7 +1,7 @@
 "use client"
 import { useEffect } from "react";
 import { io } from "socket.io-client";
-
+import file from "./file"
 export default function Home() {
   const socket = io("http://localhost:9000")
 
@@ -19,7 +19,8 @@ export default function Home() {
  
   return (
    <div>
-    Home Component
+    <file/>
+
    </div>
   );
 }
