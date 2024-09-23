@@ -12,6 +12,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation"
 import {Loader2 } from "lucide-react"
+import toast from "react-hot-toast"
+import Cookies from "js-cookie"
 
 const AuthForm = ({ type }: { type: string }) => {
 
@@ -45,6 +47,7 @@ const AuthForm = ({ type }: { type: string }) => {
         });
         console.log("this is the result", result);
         setuser(result);
+        toast.success("Sign up Successfully !")
       }
 
       if(type === "sign-in") {
@@ -53,9 +56,16 @@ const AuthForm = ({ type }: { type: string }) => {
           email: values.email,
           password: values.password,
         })
-        router.push("/")
+        if(res.status === 200) {
+          Cookies.set('refreshToken', res.data.refreshToken, {secure: true, sameSite: 'Strict'})
+          router.push("/")
+          toast.success("Sign in successfully !")
+        }
+        console.log("this is the res", res);
+        
       }
     } catch (err) {
+      toast.error("Server error !")
       console.log(err);
     } finally {
       setloading(false)

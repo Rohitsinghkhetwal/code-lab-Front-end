@@ -1,3 +1,4 @@
+import CustomToaster from "@/components/Toaster";
 import Image from "next/image";
 
 export default function RootLayout({
@@ -7,6 +8,7 @@ export default function RootLayout({
 }>) {
   return (
     <main className="flex min-h-screen w-full justify-between font-inter">
+      <CustomToaster/>
       {children}
       <div className="flex h-screen w-full sticky top-0 items-center justify-end bg-sky-1 max-lg:hidden ">
         <div className="flex items-center justify-center p-[150px] w-full md:mr-[40px]">
