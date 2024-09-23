@@ -1,5 +1,9 @@
+import Navoptions from "@/components/Navoptions";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -14,7 +18,8 @@ export default function RootLayout({
 
   }
   return (
-    <main className="flex flex-col w-full font-inter">
+    <main className="flex h-screen w-full">
+      <Navoptions/>
       {children}
     </main>
   );

@@ -1,12 +1,12 @@
-"use client"
-import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import Chats from "./chats/page";
+
 
 export default function Home() {
 
   return (
    <div>
-    <h2>This is my chat app</h2>
+    <h2>This is middleman application chat</h2>
+    
 
    </div>
   );

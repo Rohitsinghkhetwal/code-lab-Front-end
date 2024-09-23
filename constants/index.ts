@@ -1,16 +1,16 @@
 export const sidebarLinks = [
   {
-    imgURL: "",
+    imgURL: "/icons/home.svg",
     route: "/",
     label: "Home"
   },
   {
-    imgURL: "",
+    imgURL: "/icons/chat.svg",
     route: "/chats",
     label: "Chat"
   },
   {
-    imgURL: "",
+    imgURL: "/icons/code.svg",
     route: "/collaboration",
     label: "Collaborations"
   },
