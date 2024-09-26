@@ -6,6 +6,7 @@ import { sidebarLinks } from '@/constants';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import  Image  from 'next/image'
+import Footer from './Footer';
 
 const Navoptions = () => {
   const pathname = usePathname();
@@ -48,6 +49,7 @@ const Navoptions = () => {
 
 
       </nav>
+      <Footer/>
 
     </section>
   )

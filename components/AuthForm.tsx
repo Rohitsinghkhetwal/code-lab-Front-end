@@ -8,24 +8,22 @@ import { Form } from "@/components/ui/form";
 import { authformSchema } from "@/lib/utils";
 import CustomInput from "./CustomInput";
 import Link from "next/link";
-import { useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation"
-import {Loader2 } from "lucide-react"
-import toast from "react-hot-toast"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+import useStore from "@/Store/Store";
 import Cookies from "js-cookie"
 
 const AuthForm = ({ type }: { type: string }) => {
-
   const router = useRouter();
+
+  const { LogInUser, Loading, SignUpUser } = useStore();
 
   //declaring the hooks
   const [loading, setloading] = useState(false);
   const formSchema = authformSchema(type);
   const [user, setuser] = useState<any>(null);
-
-
-  
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,40 +33,41 @@ const AuthForm = ({ type }: { type: string }) => {
     },
   });
 
+  // refuse to access the loggesd in user to sign page
+
+  useEffect(() => {
+    const token = Cookies.get("refreshToken");
+    if(token) {
+      router.push("/");
+    }
+  },[router]);
+
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setloading(true);
     try {
       if (type === "sign-up") {
-        const signUpurl = 'http://localhost:9000/api/v1/users/sign-up'
-        const result = await axios.post(signUpurl, {
+        const data = {
           email: values.email,
           password: values.password,
           username: values.username
-        });
-        console.log("this is the result", result);
-        setuser(result);
-        toast.success("Sign up Successfully !")
+
+        }
+         await SignUpUser(data)
+        toast.success("Success ! Please login");
       }
 
-      if(type === "sign-in") {
-        const signInUrl = 'http://localhost:9000/api/v1/users/login';
-        const res = await axios.post(signInUrl, {
-          email: values.email,
-          password: values.password,
-        })
-        if(res.status === 200) {
-          Cookies.set('refreshToken', res.data.refreshToken, {secure: true, sameSite: 'Strict'})
-          router.push("/")
-          toast.success("Sign in successfully !")
+      if (type === "sign-in") {
+        const result = await LogInUser(values);
+        console.log("this is the USER from sign in ", result);
+        if(result) {
+          Cookies.set("refreshToken", result[0].refreshToken )
+         
+          router.push("/");
         }
-        console.log("this is the res", res);
-        
+        toast.success("User Logged in successfully!");
       }
     } catch (err) {
-      toast.error("Server error !")
-      console.log(err);
-    } finally {
-      setloading(false)
+      console.log("something went wrong ");
     }
   };
 
@@ -110,15 +109,15 @@ const AuthForm = ({ type }: { type: string }) => {
             name="password"
           />
           <div className="flex flex-col w-full">
-            <Button type="submit" disabled={loading}>
-              {loading ? (
+            <Button type="submit" disabled={Loading}>
+              {Loading ? (
                 <>
-                <Loader2 className="animate-spin" size={20}/>
-                &nbsp; Loading...
+                  <Loader2 className="animate-spin" size={20} />
+                  &nbsp; Loading...
                 </>
-              ): type === "sign-up" ? (
+              ) : type === "sign-up" ? (
                 "Sign-up"
-              ): (
+              ) : (
                 "Sign-in"
               )}
             </Button>
