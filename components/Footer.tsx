@@ -1,6 +1,8 @@
 import React from 'react'
 import useStore from "../Store/Store"
 import Image from 'next/image';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 
 interface footerProps {
@@ -8,14 +10,17 @@ interface footerProps {
 }
 
 const Footer = ({type='desktop'}:footerProps) => {
-  const {users} = useStore();
+  const {users, Logout} = useStore();
+  const router = useRouter();
   const Username = users[0]?.user;
 
   // logout functionality
-  const handleLogout = () => {
+  const handleLogout = async() => {
     try {
-      //const result = await Logout();
-      console.log("this is the result");
+      const result = await Logout();
+      Cookies.remove('refreshToken');
+      router.push('/sign-in')
+      console.log("this is the result", result);
 
     }catch(err) {
       console.log("Something went wrong here !", err);

@@ -52,8 +52,12 @@ const AuthForm = ({ type }: { type: string }) => {
           username: values.username
 
         }
-         await SignUpUser(data)
-        toast.success("Success ! Please login");
+         const UserInfo = await SignUpUser(data)
+         if(UserInfo) {
+          router.push("/sign-in");
+          toast.success("Success ! Please login");
+         }
+        
       }
 
       if (type === "sign-in") {
@@ -63,8 +67,9 @@ const AuthForm = ({ type }: { type: string }) => {
           Cookies.set("refreshToken", result[0].refreshToken )
          
           router.push("/");
+          toast.success("User Logged in successfully!");
         }
-        toast.success("User Logged in successfully!");
+        
       }
     } catch (err) {
       console.log("something went wrong ");
