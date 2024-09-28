@@ -36,6 +36,9 @@ export async function POST(request: NextRequest) {
 
   });
 
+  console.log("this is the session ", session)
+  console.log("this is the userID", userId)
+  console.log("userINFO", USER_INFO[userId]);
 
   // Use a naming pattern to allow access to rooms with a wildcard
 

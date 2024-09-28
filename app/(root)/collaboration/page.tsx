@@ -4,7 +4,7 @@ import { TextEditor } from "@/components/TextEditor";
 
 const Collaborations = () => {
   return (
-    <div className="bg-green-100">
+    <div className="relative min-h-screen min-w-full  ">
       <Room>
         <TextEditor />
       </Room>

@@ -75,6 +75,9 @@ export function Editor() {
 
   const [provider, setProvider] = useState<any>();
 
+  
+
+
 
   // Set up Liveblocks Yjs provider
 
@@ -126,6 +129,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   // Get user info from Liveblocks authentication endpoint
 
   const { name, color, picture } = useSelf((me) => me.info);
+
 
 
   // Set up editor with plugins, and place user info into Yjs awareness and cursors
@@ -340,6 +344,13 @@ function TiptapEditor({ doc, provider }: EditorProps) {
 
   });
 
+  const handleLog = () => {
+    if(editor) {
+      const content = editor.getJSON();
+      console.log("this is the content", content);
+    }
+  }
+
 
   return (
 
@@ -360,6 +371,10 @@ function TiptapEditor({ doc, provider }: EditorProps) {
         <EditorContent editor={editor} className={styles.editorContainer} />
 
       </div>
+      <button onClick={handleLog}>
+        Log Content
+
+      </button>
 
     </div>
 
