@@ -1,13 +1,12 @@
 import React from "react";
-import { Room } from "@/app/Room";
-import { TextEditor } from "@/components/TextEditor";
+import DynamicPage from "@/app/[roomId]/page";
 
 const Collaborations = () => {
+
+  
   return (
     <div className="relative min-h-screen min-w-full  ">
-      <Room>
-        <TextEditor />
-      </Room>
+    <DynamicPage/>
     </div>
   );
 };

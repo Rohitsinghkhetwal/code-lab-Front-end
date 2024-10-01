@@ -103,6 +103,9 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   // Get user info from Liveblocks authentication endpoint
 
   const { name, color, picture } = useSelf((me) => me.info);
+  console.log("name", name);
+  console.log("color", color);
+  console.log("picture", picture);
 
   // Set up editor with plugins, and place user info into Yjs awareness and cursors
 
@@ -243,6 +246,8 @@ function TiptapEditor({ doc, provider }: EditorProps) {
       }),
     ],
   });
+
+  
 
   // we are creating the new instance of yjs docs  so the written content will come here in the form of json
 
