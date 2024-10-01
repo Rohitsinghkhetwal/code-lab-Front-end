@@ -12,15 +12,14 @@ import { ClientSideSuspense } from "@liveblocks/react";
 import { DocumentSpinner } from "@/primitives/Spinner";
 
 
-export function Room({ children, roomId }: { children: ReactNode , roomId: string}) {
+export function Room({ children}: { children: ReactNode }) {
 
-  console.log("this is a roomId", roomId);
 
-  // const roomId = useExampleRoomId(
+  const roomId = useExampleRoomId(
 
-  //   "liveblocks:examples:nextjs-yjs-tiptap-advanced"
+    "liveblocks:examples:nextjs-yjs-tiptap-advanced"
 
-  // );
+  );
 
 
   return (
