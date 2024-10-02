@@ -28,13 +28,15 @@ interface createRoomProps {
   roomId: string
 }
 
+// store state of our state
+
 interface StoreState {
-  users: User[];
+  users: User[],
   rooms: createRoomProps[],
-  LogInUser: (user: UserLoginProps) => Promise<UserCookiesProps[]>;
-  Loading: boolean;
-  SignUpUser: (signupUsers: SignUpUserProps) => Promise<User[]>;
-  Logout: () => Promise<void>;
+  LogInUser: (user: UserLoginProps) => Promise<UserCookiesProps[]>,
+  Loading: boolean,
+  SignUpUser: (signupUsers: SignUpUserProps) => Promise<User[]>,
+  Logout: () => Promise<void>,
   createRoom: (id: string) => Promise<createRoomProps>
 }
 
@@ -93,7 +95,6 @@ const useStore = create<StoreState>()(
           const url = "http://localhost:9000/api/v1/users/log-out";
           const res = await axios.post(url);
           set({ users: [] });
-          console.log("this is the logout function", res);
         } catch (err) {
           console.log("Something went wrong here !", err);
         }

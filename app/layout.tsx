@@ -3,6 +3,7 @@ import { Inter, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 import "../styles/text-editor.css"
 import { Providers } from "./Providers";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const ibmplex_Serif = IBM_Plex_Serif({
@@ -27,6 +28,7 @@ export default function RootLayout({
         <div className="flex flex-row gap-[16px] padding-[16px]">
           <Providers>{children}</Providers>
           </div>
+          <Toaster/>
         
       </body>
     </html>

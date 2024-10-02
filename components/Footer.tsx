@@ -3,6 +3,7 @@ import useStore from "../Store/Store"
 import Image from 'next/image';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 
 interface footerProps {
@@ -20,6 +21,7 @@ const Footer = ({type='desktop'}:footerProps) => {
       const result = await Logout();
       Cookies.remove('refreshToken');
       router.push('/sign-in')
+      toast.success("Logged Out Success")
       console.log("this is the result", result);
 
     }catch(err) {
