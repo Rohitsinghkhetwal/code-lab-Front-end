@@ -1,11 +1,19 @@
 "use client"
+import useStore from '@/Store/Store';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 
 const NameComponent = () => {
+
+  const router = useRouter();
+
+
+  const {createRoom,rooms} = useStore();
   const [link, setlink] = useState<string>("");
   const [name, setname] = useState<string>("");
+  console.log("hjhjhjhjh",rooms)
 
 
 
@@ -17,7 +25,19 @@ const NameComponent = () => {
     return randomString
   }
 
-  const joinRoom = () => {
+  const joinRoom = async() => {
+    try {
+      const result = await createRoom(link);
+      if(result) {
+        router.push("/collaboration")
+        toast.success("Joined the room");
+      }
+      console.log("hjhjhjhjh",rooms)
+    }catch(err) {
+      console.log("error creating the room ", err);
+      throw err;
+
+    }
     // first I have to fetch the api of create room and then 
     // pass the returnd id to roomprovider 
     // and then navigate to room and store the user info to database
@@ -45,6 +65,10 @@ const NameComponent = () => {
 
   return (
     <div className='flex flex-col justify-center items-center w-full bg-violet-100 '>
+
+
+      <h1 className='font-bold text-slate-500 text-[20px]'>Enter the Room </h1>
+    
       
       <div className='flex flex-row mt-8 w-auto'>
       <input

@@ -1,7 +1,7 @@
 "use client";
 
 
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useState } from "react";
 
 import { RoomProvider } from "@liveblocks/react/suspense";
 
@@ -10,23 +10,32 @@ import { useSearchParams } from "next/navigation";
 import { ClientSideSuspense } from "@liveblocks/react";
 
 import { DocumentSpinner } from "@/primitives/Spinner";
+import useStore from "@/Store/Store";
 
 
 export function Room({ children}: { children: ReactNode }) {
+  const { rooms } = useStore();
 
+  const joinRoom = rooms.map((items) => {
+    return items.roomId;
+  })
+  
+  const lastIndex = joinRoom.length - 1;
+  const recentlyJoinedUser = joinRoom.length === 1 ? joinRoom[0] : joinRoom[lastIndex];
 
   const roomId = useExampleRoomId(
 
     "liveblocks:examples:nextjs-yjs-tiptap-advanced"
 
   );
+  console.log("this is the liveblock room id", roomId)
 
 
   return (
 
     <RoomProvider
 
-      id={roomId}
+      id={recentlyJoinedUser}
 
       initialPresence={{
 
