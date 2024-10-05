@@ -2,7 +2,7 @@
 import useStore from '@/Store/Store';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 
 const NameComponent = () => {
@@ -27,14 +27,20 @@ const NameComponent = () => {
 
   const joinRoom = async() => {
     try {
-      const result = await createRoom(link);
-      if(result) {
+      if(!link || !name) {
+        toast.error("Enter link or name");
+        return;
+      }
+      const result = await createRoom(link, name);
+      if(!result) {
+        toast.error("Error");
+      }else {
         router.push("/collaboration")
-        toast.success("Joined the room");
       }
       console.log("hjhjhjhjh",rooms)
     }catch(err) {
       console.log("error creating the room ", err);
+      router.push("sign-in")
       throw err;
 
     }

@@ -18,12 +18,14 @@ import Cookies from "js-cookie"
 const AuthForm = ({ type }: { type: string }) => {
   const router = useRouter();
 
-  const { LogInUser, Loading, SignUpUser } = useStore();
+  const { LogInUser, Loading, SignUpUser, users} = useStore();
+
+  console.log("this is the user from auth", users)
+
+  
 
   //declaring the hooks
-  const [loading, setloading] = useState(false);
   const formSchema = authformSchema(type);
-  const [user, setuser] = useState<any>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,14 +35,14 @@ const AuthForm = ({ type }: { type: string }) => {
     },
   });
 
+  useEffect(() => {
+    console.log("Users from useEffect", users[0])
+    
+
+  },[])
+
   // refuse to access the loggesd in user to sign page
 
-  useEffect(() => {
-    const token = Cookies.get("refreshToken");
-    if(token) {
-      router.push("/");
-    }
-  },[router]);
 
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -54,8 +56,9 @@ const AuthForm = ({ type }: { type: string }) => {
         }
          const UserInfo = await SignUpUser(data)
          if(UserInfo) {
-          router.push("/sign-in");
           toast.success("Success ! Please login");
+          router.push("/sign-in");
+          
          }
         
       }
@@ -63,11 +66,13 @@ const AuthForm = ({ type }: { type: string }) => {
       if (type === "sign-in") {
         const result = await LogInUser(values);
         console.log("this is the USER from sign in ", result);
-        if(result) {
-          Cookies.set("refreshToken", result[0].refreshToken )
-         
-          router.push("/");
+        if(result && result[0]) {
+          const { refreshToken} = result[0];
+          localStorage.setItem("refreshToken", refreshToken)
+
           toast.success("User Logged in successfully!");
+          router.push("/");
+          
         }
         
       }

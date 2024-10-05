@@ -15,33 +15,45 @@ import useStore from "@/Store/Store";
 
 export function Room({ children}: { children: ReactNode }) {
   const { rooms } = useStore();
+  console.log("this is the rooms", rooms)
 
   const joinRoom = rooms.map((items) => {
-    return items.roomId;
+    return {
+      roomId: items.roomId,
+      accessToken: items.AccessToken,
+      Joiner: items.JoinerName
+
+    }
   })
-  
+  // get the last room the user joined 
+
   const lastIndex = joinRoom.length - 1;
-  const recentlyJoinedUser = joinRoom.length === 1 ? joinRoom[0] : joinRoom[lastIndex];
+  const recentlyJoinedUser = joinRoom[lastIndex]
 
-  const roomId = useExampleRoomId(
+  const {roomId, accessToken, Joiner} = recentlyJoinedUser || {};
 
-    "liveblocks:examples:nextjs-yjs-tiptap-advanced"
+  // const roomID = useExampleRoomId(
+  //   roomId
+  // );
+  //"liveblocks:examples:nextjs-yjs-tiptap-advanced"
 
-  );
-  console.log("this is the liveblock room id", roomId)
+  // google it and make it working !!
+  
 
 
   return (
 
     <RoomProvider
 
-      id={recentlyJoinedUser}
+      id={roomId}
 
       initialPresence={{
 
         cursor: null,
+        Joiner
 
       }}
+      accessToken={accessToken}
 
     >
 
