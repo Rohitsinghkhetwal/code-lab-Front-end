@@ -19,7 +19,6 @@ const Footer = ({type='desktop'}:footerProps) => {
   const handleLogout = async() => {
     try {
       const result = await Logout();
-      Cookies.remove('refreshToken');
       router.push('/sign-in')
       toast.success("Logged Out Success")
       console.log("this is the result", result);

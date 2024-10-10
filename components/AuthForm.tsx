@@ -66,9 +66,8 @@ const AuthForm = ({ type }: { type: string }) => {
       if (type === "sign-in") {
         const result = await LogInUser(values);
         console.log("this is the USER from sign in ", result);
-        if(result && result[0]) {
-          const { refreshToken} = result[0];
-          localStorage.setItem("refreshToken", refreshToken)
+        if(result) {
+          console.log("sign in value", result)
 
           toast.success("User Logged in successfully!");
           router.push("/");

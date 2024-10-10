@@ -13,7 +13,6 @@ const NameComponent = () => {
   const {createRoom,rooms} = useStore();
   const [link, setlink] = useState<string>("");
   const [name, setname] = useState<string>("");
-  console.log("hjhjhjhjh",rooms)
 
 
 
@@ -27,20 +26,20 @@ const NameComponent = () => {
 
   const joinRoom = async() => {
     try {
-      if(!link || !name) {
+      if(!link) {
         toast.error("Enter link or name");
         return;
       }
-      const result = await createRoom(link, name);
-      if(!result) {
-        toast.error("Error");
-      }else {
-        router.push("/collaboration")
-      }
-      console.log("hjhjhjhjh",rooms)
+      // const result = await createRoom(link, name);
+      // if(!result) {
+      //   toast.error("Error");
+      // }else {
+      //   router.push("/collaboration")
+      // }
+      router.push("/collaboration");
     }catch(err) {
       console.log("error creating the room ", err);
-      router.push("sign-in")
+      router.push("/sign-in")
       throw err;
 
     }

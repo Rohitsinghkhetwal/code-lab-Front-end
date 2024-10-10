@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Router } from "lucide-react";
 import toast from "react-hot-toast";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -27,21 +26,21 @@ interface SignUpUserProps {
 }
 
 interface createRoomProps {
-  roomId: string,
-  AccessToken: string,
-  JoinerName: string
+  roomId: string;
+  AccessToken: string;
+  JoinerName: string;
 }
 
 // store state of our state
 
 interface StoreState {
-  users: User[],
-  rooms: createRoomProps[],
-  LogInUser: (user: UserLoginProps) => Promise<UserCookiesProps[]>,
-  Loading: boolean,
-  SignUpUser: (signupUsers: SignUpUserProps) => Promise<User[]>,
-  Logout: () => Promise<void>,
-  createRoom: (id: string, name: string) => Promise<createRoomProps>
+  users: User[];
+  rooms: createRoomProps[];
+  LogInUser: (user: UserLoginProps) => Promise<UserCookiesProps[]>;
+  Loading: boolean;
+  SignUpUser: (signupUsers: SignUpUserProps) => Promise<User[]>;
+  Logout: () => Promise<void>;
+  createRoom: (id: string, name: string) => Promise<createRoomProps>;
 }
 
 const useStore = create<StoreState>()(
@@ -53,14 +52,17 @@ const useStore = create<StoreState>()(
       LogInUser: async (user: UserLoginProps): Promise<UserCookiesProps[]> => {
         set({ Loading: true });
         try {
-         
           const url = "http://localhost:9000/api/v1/users/login";
-          const result = await axios.post(url, {
-            email: user.email,
-            password: user.password,
-          }, {
-            withCredentials: true,
-          });
+          const result = await axios.post(
+            url,
+            {
+              email: user.email,
+              password: user.password,
+            },
+            {
+              withCredentials: true,
+            }
+          );
           const userData = Array.isArray(result?.data)
             ? result.data
             : [result.data];
@@ -86,7 +88,7 @@ const useStore = create<StoreState>()(
             username: signupUsers.username,
           });
           const UserData = Array.isArray(res.data) ? res.data : [res.data];
-          
+
           set({ users: UserData });
           return UserData;
         } catch (err) {
@@ -101,62 +103,55 @@ const useStore = create<StoreState>()(
       Logout: async () => {
         try {
           const url = "http://localhost:9000/api/v1/users/log-out";
-          const res = await axios.post(url,{}, {
-            withCredentials: true
-          });
-          localStorage.removeItem("refreshToken")
+          const res = await axios.post(
+            url,
+            {},
+            {
+              withCredentials: true,
+            }
+          );
           set({ users: [] });
         } catch (err) {
           console.log("Something went wrong here !", err);
         }
       },
 
-      // create room 
-      createRoom : async(id: string, name: string):Promise<createRoomProps> => {
-        set({Loading: true})
+      // create room
+      createRoom: async (
+        id: string,
+      ): Promise<createRoomProps> => {
+        set({ Loading: true });
         try {
-          const token = localStorage.getItem("refreshToken");
-          console.log("this is the token", token);
-          if(!token) {
-          toast.error("User not Authenticated");
-          return {
-            roomId: "",
-            AccessToken: "",
-            JoinerName: "",
-          }
-          }
-          const url = 'http://localhost:9000/api/v1/room/create-room'
-          const result = await axios.post(url, {
-            roomId: id,
-            name: name,
-          }, 
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
+          const url = "http://localhost:9000/api/v1/room/create-room";
+          const result = await axios.post(
+            url,
+            {
+              roomId: id,
+            },
+            {
+              withCredentials: true,
+            }
+          );
 
-        })
-          
-          console.log('result in perfect manner ', JSON.stringify(result, null, 2))
+          console.log(
+            "result in perfect manner ",
+            JSON.stringify(result, null, 2)
+          );
           const createdRoom = result.data;
           set((state) => ({
             rooms: [...state.rooms, createdRoom],
-          }))
+          }));
           return createdRoom;
-
-        }catch(err) {
+        } catch (err) {
           console.log("something wrong while creating the room", err);
-          if(err) {
-            toast.error("User not authenticated. Please login again !")
-            localStorage.removeItem("refreshToken");
-
+          if (err) {
+            toast.error("User not authenticated. Please login again !");
           }
           throw err;
-        }finally {
-          set({Loading: false})
+        } finally {
+          set({ Loading: false });
         }
-      }
+      },
     }),
     {
       name: "codelab-storage",
