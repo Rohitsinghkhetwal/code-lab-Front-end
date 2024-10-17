@@ -1,7 +1,6 @@
 import React from 'react'
 import useStore from "../Store/Store"
 import Image from 'next/image';
-import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 

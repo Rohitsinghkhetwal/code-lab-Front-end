@@ -1,4 +1,4 @@
-import Collaborations from "./collaboration/page";
+import Collaborations from "./[collaboration]/page";
 import NameComponent from "./enter-name/page";
 
 export default function Home() {

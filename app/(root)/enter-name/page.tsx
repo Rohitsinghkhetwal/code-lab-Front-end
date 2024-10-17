@@ -1,16 +1,21 @@
 "use client"
 import useStore from '@/Store/Store';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams} from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 
 
 const NameComponent = () => {
 
+  const searchParams = useSearchParams();
+
+  const roomId = searchParams.get("collaboration")
+  console.log("roomid is here", roomId)
+
+
+  const { setLink, setName, addRoom } = useStore();
   const router = useRouter();
 
-
-  const {createRoom,rooms} = useStore();
   const [link, setlink] = useState<string>("");
   const [name, setname] = useState<string>("");
 
@@ -20,7 +25,6 @@ const NameComponent = () => {
     const randomString = [...Array(6)]
     .map(() => Math.random().toString(36).substring(2, 15))
     .join("");
-    console.log("this is a random string", randomString)
     return randomString
   }
 
@@ -30,13 +34,14 @@ const NameComponent = () => {
         toast.error("Enter link or name");
         return;
       }
-      // const result = await createRoom(link, name);
-      // if(!result) {
-      //   toast.error("Error");
-      // }else {
-      //   router.push("/collaboration")
-      // }
-      router.push("/collaboration");
+      setLink(link);
+      setName(name);
+      addRoom({
+        roomId: link,
+        name: name
+      })
+
+      router.push(`/${roomId}`);
     }catch(err) {
       console.log("error creating the room ", err);
       router.push("/sign-in")
@@ -53,7 +58,7 @@ const NameComponent = () => {
 
   const handleGenerateLink = () => {
     const newlink = handleRandomLink();
-    setlink(newlink);
+    
   }
 
   const handleCopyLink = () => {
@@ -68,7 +73,9 @@ const NameComponent = () => {
     }
   }
 
+
   return (
+   
     <div className='flex flex-col justify-center items-center w-full bg-violet-100 '>
 
 
@@ -79,7 +86,8 @@ const NameComponent = () => {
       <input
       placeholder='Ex xJhU7duv '
       value={link}
-      readOnly
+      onChange={(e) => setlink(e.target.value)}
+      
       className='px-2 py-3 rounded border-1 bg-slate-300 w-full h-12 border-1 sm:w-96'
       />
       {
@@ -112,6 +120,7 @@ const NameComponent = () => {
    
 
     </div>
+  
   )
 }
 

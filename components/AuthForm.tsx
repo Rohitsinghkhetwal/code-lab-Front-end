@@ -8,12 +8,10 @@ import { Form } from "@/components/ui/form";
 import { authformSchema } from "@/lib/utils";
 import CustomInput from "./CustomInput";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import useStore from "@/Store/Store";
-import Cookies from "js-cookie"
 
 const AuthForm = ({ type }: { type: string }) => {
   const router = useRouter();
@@ -34,12 +32,6 @@ const AuthForm = ({ type }: { type: string }) => {
       password: "",
     },
   });
-
-  useEffect(() => {
-    console.log("Users from useEffect", users[0])
-    
-
-  },[])
 
   // refuse to access the loggesd in user to sign page
 

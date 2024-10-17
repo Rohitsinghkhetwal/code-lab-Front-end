@@ -21,9 +21,7 @@ export function Room({ children}: { children: ReactNode }) {
   const joinRoom = rooms.map((items) => {
     return {
       roomId: items.roomId,
-      accessToken: items.AccessToken,
-      Joiner: items.JoinerName
-
+      name: items.name
     }
   })
   // get the last room the user joined 
@@ -31,7 +29,7 @@ export function Room({ children}: { children: ReactNode }) {
   const lastIndex = joinRoom.length - 1;
   const recentlyJoinedUser = joinRoom[lastIndex]
 
-  const {roomId, accessToken, Joiner} = recentlyJoinedUser || {};
+  const {roomId, name} = recentlyJoinedUser || {};
   console.log("this is the user", roomId)
 
   // const roomID = useExampleRoomId(
@@ -39,7 +37,6 @@ export function Room({ children}: { children: ReactNode }) {
   // );
   //"liveblocks:examples:nextjs-yjs-tiptap-advanced"
 
-  // google it and make it working !!
   
 
 
@@ -47,7 +44,7 @@ export function Room({ children}: { children: ReactNode }) {
 
     <RoomProvider
 
-      id={roomId}
+      id="12345"
 
       initialPresence={{
 

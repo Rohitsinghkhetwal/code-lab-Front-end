@@ -36,18 +36,18 @@ export async function POST(request: NextRequest) {
 
   });
 
-  console.log("this is the session ", session)
-  console.log("this is the userID", userId)
-  console.log("userINFO", USER_INFO[userId]);
 
   // Use a naming pattern to allow access to rooms with a wildcard
 
-  session.allow(`liveblocks:examples:*`, session.FULL_ACCESS);
+  session.allow(`*`, session.FULL_ACCESS);
 
 
   // Authorize the user and return the result
 
   const { body, status } = await session.authorize();
+  console.log('body', JSON.stringify(body, null, 2))
+  console.log('status', JSON.stringify(status, null, 2))
+  console.log('session', JSON.stringify(session, null, 2))
 
   return new Response(body, { status });
 

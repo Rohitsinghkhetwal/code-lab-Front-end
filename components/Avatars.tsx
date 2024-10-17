@@ -56,8 +56,6 @@ export function Avatar({ picture, name }: { picture: string; name: string }) {
 
       <img
 
-        alt={name}
-
         src={picture}
 
         className={styles.avatar_picture}
