@@ -20,15 +20,13 @@ const Navoptions = () => {
         {sidebarLinks.map((items) => {
           const isActive =
             pathname === items.route || pathname.startsWith(`${items.route}/`);
-          
-          const isCollaborationActive = items.route === "/" && pathname.startsWith("/");
           return (
             <Link
               href={items.route}
               key={items.label}
               className={cn(
                 "flex gap-3 items-center py-1 md:p-3 2xl:p-4 rounded-lg justify-center xl:justify-start",
-                { "bg-slate-700": isCollaborationActive || isActive }
+                { "bg-slate-700": isActive }
               )}
             >
               <div className="relative size-6">
@@ -37,7 +35,7 @@ const Navoptions = () => {
                   alt={items.label}
                   fill
                   className={cn({
-                    "brightness-0 invert": isCollaborationActive || isActive,
+                    "brightness-0 invert": isActive,
                   })}
                 />
               </div>
@@ -45,7 +43,7 @@ const Navoptions = () => {
               <p
                 className={cn(
                   "text-16 font-semibold text-black max-xl:hidden",
-                  { "!text-white": isCollaborationActive || isActive }
+                  { "!text-white": isActive }
                 )}
               >
                 {" "}

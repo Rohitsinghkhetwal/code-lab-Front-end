@@ -11,34 +11,11 @@ import { ClientSideSuspense } from "@liveblocks/react";
 
 import { DocumentSpinner } from "@/primitives/Spinner";
 
-import useStore from "@/Store/Store";
 
 
 export function Room({ children, roomId}: { children: ReactNode, roomId: string}) {
-  const { rooms } = useStore(); // coming from zustand 
-  // console.log("this is the rooms", rooms)
 
-  // const joinRoom = rooms.map((items) => {
-  //   return {
-  //     roomId: items.roomId,
-  //     name: items.name
-  //   }
-  // })
-  // // get the last room the user joined 
-
-  // const lastIndex = joinRoom.length - 1;
-  // const recentlyJoinedUser = joinRoom[lastIndex]
-
-  // const {roomId, name} = recentlyJoinedUser || {};
-  // console.log("this is the user", roomId)
-
-  // const roomID = useExampleRoomId(
-  //   roomId
-  // );
-  //"liveblocks:examples:nextjs-yjs-tiptap-advanced"
-
-  
-
+  console.log("this is the roomid from roomProvider", roomId)
 
   return (
 

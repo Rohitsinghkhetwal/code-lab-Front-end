@@ -9,6 +9,7 @@ export function Providers({ children }: PropsWithChildren) {
   return (
     <LiveblocksProvider
       authEndpoint='api/liveblocks-auth'
+      throttle={100}
 
     >
       {children}

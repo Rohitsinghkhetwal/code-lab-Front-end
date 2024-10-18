@@ -23,6 +23,8 @@ import styles from "./CollaborativeEditor.module.css";
 
 import { Avatars } from "@/components/Avatars";
 
+import jsPDF from "jspdf"
+
 
 // Collaborative text editor with simple rich text, live cursors, and live avatars
 
@@ -136,11 +138,64 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   });
 
 
+  function ExtractFiles(nodes: any) {
+    let textContent = "";
+    console.log("this is a nodes", nodes);
+    nodes.forEach((temp: any) => {
+      if (temp.type === "paragraph") {
+        temp?.content?.forEach((item: any) => {
+          if (item.type === "text") {
+            textContent += item.text + " ";
+          }
+        });
+      } else if (temp.type === "orderedList") {
+        temp?.content?.forEach((OrderedItem: any) => {
+          if (OrderedItem.type === "listItem") {
+            OrderedItem.content.forEach((items: any) => {
+              if (items.type === "paragraph") {
+                items?.content.forEach((textItem: any) => {
+                  if (textItem?.type === "text") {
+                    textContent += textItem.text + " ";
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+      textContent += "\n";
+      console.log("temp.content", JSON.stringify(temp.content, null, 2));
+      if (!temp.content) {
+        textContent += "\n";
+      }
+    });
+    return textContent;
+  }
+
+
+  const handleDownloadPdf = () => {
+    if (editor) {
+      const data = editor.getJSON();
+      let res = data.content;
+      const extractedText = ExtractFiles(res);
+      const pdf = new jsPDF();
+      pdf.text(extractedText, 10, 10);
+      pdf.save("text-file.pdf");
+    }
+  };
+
+
   return (
 
     <div className={styles.container}>
 
       <div className={styles.editorHeader}>
+      <button
+        onClick={handleDownloadPdf}
+        className="bg-slate-600 text-white text-bold mx-2 px-3 py-1 rounded mb-2"
+      >
+        Download as Pdf
+      </button>
 
         <Toolbar editor={editor} />
 
@@ -149,6 +204,8 @@ function TiptapEditor({ doc, provider }: EditorProps) {
       </div>
 
       <EditorContent editor={editor} className={styles.editorContainer} />
+
+    
 
     </div>
 
