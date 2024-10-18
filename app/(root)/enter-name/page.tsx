@@ -1,16 +1,12 @@
 "use client"
 import useStore from '@/Store/Store';
-import { useRouter, useSearchParams} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 
 
 const NameComponent = () => {
 
-  const searchParams = useSearchParams();
-
-  const roomId = searchParams.get("collaboration")
-  console.log("roomid is here", roomId)
 
 
   const { setLink, setName, addRoom } = useStore();
@@ -41,7 +37,7 @@ const NameComponent = () => {
         name: name
       })
 
-      router.push(`/${roomId}`);
+      router.push(`/${link}`);
     }catch(err) {
       console.log("error creating the room ", err);
       router.push("/sign-in")

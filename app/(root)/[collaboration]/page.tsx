@@ -1,15 +1,21 @@
+"use client"
 import { Room } from "@/app/Room";
 import { CollaborativeEditor } from "@/components/CollaborativeEditor";
+import { useParams } from "next/navigation";
 
-import React from "react";
 
 
 const Collaborations = () => {
+  const { collaboration } = useParams();
+  console.log("this is the collaboration id from routes", collaboration)
+
+  const NormalRoomID = Array.isArray(collaboration) ? collaboration[0] : collaboration;
+
 
   
   return (
     <div className="relative min-h-screen min-w-full">
-      <Room>
+      <Room roomId={NormalRoomID}> 
 
         <CollaborativeEditor/>
 
