@@ -3,7 +3,6 @@ import { Room } from "@/app/Room";
 import { CollaborativeEditor } from "@/components/CollaborativeEditor";
 import useStore from "@/Store/Store";
 import { useParams } from "next/navigation";
-import { addUsertoRoom } from "../api/room";
 
 
 
@@ -32,7 +31,7 @@ const Collaborations = () => {
       <main>
       <Room roomId={NormalRoomID}> 
 
-        <CollaborativeEditor name={name}/>
+        <CollaborativeEditor/>
 
       </Room>
       </main>

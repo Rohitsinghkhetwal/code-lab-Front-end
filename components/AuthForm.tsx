@@ -18,7 +18,8 @@ const AuthForm = ({ type }: { type: string }) => {
 
   const { LogInUser, Loading, SignUpUser, users} = useStore();
 
-  console.log("this is the user from auth", users)
+  console.log('User from AuthForm @##$@!!!!', JSON.stringify(users, null, 2))
+  console.log("test", users[0]?.user?._id);
 
   
 
@@ -32,10 +33,6 @@ const AuthForm = ({ type }: { type: string }) => {
       password: "",
     },
   });
-
-  // refuse to access the loggesd in user to sign page
-
-
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
