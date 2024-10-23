@@ -9,7 +9,7 @@ import { useParams } from "next/navigation";
 
 const Collaborations = () => {
   const { collaboration } = useParams();
-  const {link, name} = useStore();
+  const { name} = useStore();
 
   const NormalRoomID = Array.isArray(collaboration) ? collaboration[0] : collaboration;
 

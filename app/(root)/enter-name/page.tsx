@@ -7,6 +7,13 @@ import toast from 'react-hot-toast';
 
 const NameComponent = () => {
 
+  // show that user is logged in or not 
+  // if user is logged in we will generate the roomID through backend 
+  // and userId that will come from zustand of loggedin User
+  // and if user is not logged in we will ask the name of the user nad the give it roomId 
+  // AND THEN MEETING WILL BE JOINED 
+  // how to update presence we will hit the getall user api and then we will pass to the api/auth component and then it should work fine   
+
 
 
   const { setLink, setName, addRoom } = useStore();
