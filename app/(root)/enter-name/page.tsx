@@ -3,10 +3,12 @@ import useStore from '@/Store/Store';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
+import { createRoom } from '../api/room';
 
 
 const NameComponent = () => {
 
+  // fisrt I have to call the createRoom api and then i will get the room link from backend and then I have to send the userid and username to backend 
   // show that user is logged in or not 
   // if user is logged in we will generate the roomID through backend 
   // and userId that will come from zustand of loggedin User
@@ -15,64 +17,34 @@ const NameComponent = () => {
   // how to update presence we will hit the getall user api and then we will pass to the api/auth component and then it should work fine   
 
 
-
-  const { setLink, setName, addRoom } = useStore();
   const router = useRouter();
+  const [link, setLink] = useState<string>("")
 
-  const [link, setlink] = useState<string>("");
-  const [name, setname] = useState<string>("");
+  // const handleCopyLink = () => {
+  //   if(link) {
+  //     navigator.clipboard.writeText(link)
+  //   .then(() =>{
+  //     toast.success("Link copied")
+  //   })
+  //   .catch((err) => {
+  //     console.error("Failed to copy link "), err
+  //   })
+  //   }
+  // }
 
-
-
-  const handleRandomLink = () => {
-    const randomString = [...Array(6)]
-    .map(() => Math.random().toString(36).substring(2, 15))
-    .join("");
-    return randomString
-  }
-
-  const joinRoom = async() => {
+  const handleCreateRoom = async() => {
     try {
-      if(!link) {
-        toast.error("Enter link or name");
-        return;
-      }
-      setLink(link);
-      setName(name);
-      addRoom({
-        roomId: link,
-        name: name
-      })
-
-      router.push(`/${link}`);
+      const room = await createRoom();
+      console.log('this is the rooom ', JSON.stringify(room, null, 2))
+      const getRoomLink = room?.data?.result?.link;
+      setLink(getRoomLink);
+      router.push(`/${link}`)
+      // start from here 
+      toast.success("Room created success !");
+      
     }catch(err) {
-      console.log("error creating the room ", err);
-      router.push("/sign-in")
-      throw err;
-
-    }
-    // first I have to fetch the api of create room and then 
-    // pass the returnd id to roomprovider 
-    // and then navigate to room and store the user info to database
-    // joined user will be host of the meeting and then make the role to the Host 
-    // make the avatar ui good
-
-  }
-
-  const handleGenerateLink = () => {
-    const newlink = handleRandomLink();
-    
-  }
-
-  const handleCopyLink = () => {
-    if(link) {
-      navigator.clipboard.writeText(link)
-    .then(() =>{
-      toast.success("Link copied")
-    })
-    .catch((err) => {
-      console.error("Failed to copy link "), err
-    })
+      console.log("Something went wrong while creating the room")
+      throw err
     }
   }
 
@@ -81,11 +53,19 @@ const NameComponent = () => {
    
     <div className='flex flex-col justify-center items-center w-full bg-violet-100 '>
 
+      <button className='bg-slate-500 px-4 py-2 text-white my-4 rounded' onClick={() => handleCreateRoom()}>
+        Create Room
+      </button>
 
-      <h1 className='font-bold text-slate-500 text-[20px]'>Enter the Room </h1>
+      <button className='bg-slate-500 px-4 py-2 text-white rounded'>
+        Join Room
+      </button>
+
+
+      {/* <h1 className='font-bold text-slate-500 text-[20px]'>Enter the Room </h1> */}
     
       
-      <div className='flex flex-row mt-8 w-auto'>
+      {/* <div className='flex flex-row mt-8 w-auto'>
       <input
       placeholder='Ex xJhU7duv '
       value={link}
@@ -107,20 +87,20 @@ const NameComponent = () => {
       
      
       </div>
-      <p className='text-slate-400 text-5 py-2 font-bold cursor-pointer' onClick={handleGenerateLink}>Generate a link ?</p>
+      <p className='text-slate-400 text-5 py-2 font-bold cursor-pointer' onClick={handleGenerateLink}>Generate a link ?</p> */}
 
-      <div className='mt-3 px-16 w-auto'>
+      {/* <div className='mt-3 px-16 w-auto'>
       <input
       placeholder='Ex Hayati '
       value={name}
       onChange={(e) => setname(e.target.value)}
       className='px-2 py-3 rounded border-1 bg-slate-300 w-full h-12 sm:w-96'
       />
-      </div>
+      </div> */}
 
 
-      <button onClick={joinRoom} className='bg-slate-700 px-2 mx-4 py-2 font-semibold rounded text-white mt-3'>Join Room</button>
-   
+      {/* <button onClick={joinRoom} className='bg-slate-700 px-2 mx-4 py-2 font-semibold rounded text-white mt-3'>Join Room</button>
+    */}
 
     </div>
   

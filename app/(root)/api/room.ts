@@ -4,8 +4,10 @@ import axios from "axios";
 export const createRoom = async() => {
   try {
     const url = "http://localhost:9000/api/v1/room/create-room";
-    const result = await axios.post(url); 
-    console.log("this is the result from room", result);
+    const result = await axios.post(url,{},
+      {
+      withCredentials: true,
+    }); 
     return result;
   }catch(err) {
     console.log("something went wrong !", err);
@@ -21,7 +23,11 @@ export const AddUserToRoom = async(hostID: string | null , roomID: string, usern
     const data = await axios.post(url,{
       userId: hostID,
       username: username,
-    });
+    },
+  {
+    withCredentials: true,
+  }
+);
     console.log('This is the data from room.ts', JSON.stringify(data, null, 2))
 
     return data;
