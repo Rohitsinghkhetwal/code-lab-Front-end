@@ -25,6 +25,10 @@ import { Avatars } from "@/components/Avatars";
 
 import jsPDF from "jspdf"
 
+import Image from "next/image";
+import toast from "react-hot-toast";
+import useStore from "@/Store/Store";
+
 
 // Collaborative text editor with simple rich text, live cursors, and live avatars
 
@@ -35,6 +39,8 @@ export function CollaborativeEditor() {
   const [doc, setDoc] = useState<Y.Doc>();
 
   const [provider, setProvider] = useState<any>();
+
+  
 
 
   // Set up Liveblocks Yjs provider
@@ -87,6 +93,8 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   // Get user info from Liveblocks authentication endpoint
 
   const userInfo = useSelf((me) => me.info);
+  
+  const {  roomLink } = useStore()
 
 
   // Set up editor with plugins, and place user info into Yjs awareness and cursors
@@ -164,7 +172,6 @@ function TiptapEditor({ doc, provider }: EditorProps) {
         });
       }
       textContent += "\n";
-      console.log("temp.content", JSON.stringify(temp.content, null, 2));
       if (!temp.content) {
         textContent += "\n";
       }
@@ -184,24 +191,63 @@ function TiptapEditor({ doc, provider }: EditorProps) {
     }
   };
 
+  const copyRoomId = () => { 
+    if(roomLink) {
+      navigator.clipboard.writeText(roomLink)
+    .then(() =>{
+      toast.success("Link copied")
+    })
+    .catch((err) => {
+      console.error("Failed to copy link "), err
+    })
+    }
+  
+  }
+
+  const LeaveRoom = () => {
+    console.log("Leaving the room ....")
+
+  }
+
 
   return (
 
     <div className={styles.container}>
 
       <div className={styles.editorHeader}>
-      <button
+   
+
+
+
+        <Toolbar editor={editor} />
+
+        <Avatars />
+        <button
         onClick={handleDownloadPdf}
         className="bg-slate-600 text-white text-bold mx-2 px-3 py-1 rounded mb-2"
       >
         Download as Pdf
       </button>
+      <Image
+       src="/icons/exit.svg"
+       alt="exit"
+       width={20}
+       height={20}
+       onClick={LeaveRoom}
+      />
 
-        <Toolbar editor={editor} />
+      <Image
+       src="/icons/link.svg"
+       alt="link"
+       width={20}
+       height={20}
+       className="cursor-pointer"
+       onClick={copyRoomId}
+      />
 
-        <Avatars />
 
       </div>
+    
 
       <EditorContent editor={editor} className={styles.editorContainer} />
 

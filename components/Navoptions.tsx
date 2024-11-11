@@ -46,7 +46,6 @@ const Navoptions = () => {
                   { "!text-white": isActive }
                 )}
               >
-                {" "}
                 {items.label}
               </p>
             </Link>
