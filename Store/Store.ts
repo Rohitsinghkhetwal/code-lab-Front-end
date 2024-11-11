@@ -1,3 +1,4 @@
+import { AddUserToRoom, createRoom } from "@/app/(root)/api/room";
 import axios from "axios";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -33,33 +34,24 @@ interface createRoomProps {
 
 interface StoreState {
   users: User[];
-  link: string;
-  name: string;
-  setLink: (link: string) => void;
-  setName: (name: string) => void;
+  roomLink: string,
   rooms: createRoomProps[];
   LogInUser: (user: UserLoginProps) => Promise<UserCookiesProps[]>;
   Loading: boolean;
   SignUpUser: (signupUsers: SignUpUserProps) => Promise<User[]>;
   Logout: () => Promise<void>;
-  //ClearRoom : () => void;
-  addRoom: (room: createRoomProps) => void;
+  CreateRoom: () => Promise<void>
+
+  
 }
 
 const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
       users: [],
-      link: "",
-      name: "",
+      roomLink: "",
       rooms: [],
       Loading: false,
-      addRoom: (room: createRoomProps) => {
-        set((state) => ({rooms: [...state.rooms, room]}))
-
-      },
-      setLink: (link: string) => set({link}),
-      setName: (name: string) => set({name}),
       LogInUser: async (user: UserLoginProps): Promise<UserCookiesProps[]> => {
         set({ Loading: true });
         try {
@@ -125,11 +117,19 @@ const useStore = create<StoreState>()(
           console.log("Something went wrong here !", err);
         }
       },
-      
-      // ClearRoom: () => {
-      //   set({rooms: []})
-      // }
+      //creating the room and saving the room link to store
+      CreateRoom: async() => {
+        try {
+          const result = await createRoom();
+          console.log('result from store ', JSON.stringify(result, null, 2));
+          const getRoomLink = result?.data?.result?.link;
+          set({roomLink: getRoomLink});
+        }catch(err) {
+          console.log("something went wrong !", err);
+          throw err;
 
+        }
+      }
       
     }),
     {

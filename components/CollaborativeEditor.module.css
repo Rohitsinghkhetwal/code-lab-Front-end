@@ -4,17 +4,18 @@
 
   flex-direction: column;
 
-  position: relative;
+  position: fixed;
 
   border-radius: 12px;
 
   background: #fff;
 
-  width: 100%;
+  width: 60%;
 
   height: 100%;
 
   color: #111827;
+
 
 }
 
