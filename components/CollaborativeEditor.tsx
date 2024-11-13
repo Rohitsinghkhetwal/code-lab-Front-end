@@ -204,7 +204,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   
   }
 
-  const LeaveRoom = () => {
+  const leaveRoom = () => {
     console.log("Leaving the room ....")
 
   }
@@ -228,13 +228,10 @@ function TiptapEditor({ doc, provider }: EditorProps) {
       >
         Download as Pdf
       </button>
-      <Image
-       src="/icons/exit.svg"
-       alt="exit"
-       width={20}
-       height={20}
-       onClick={LeaveRoom}
-      />
+
+      <button className="bg-red-400 px-3 py-2 rounded text-white font-semibold" onClick={leaveRoom}>
+        Leave
+      </button>
 
       <Image
        src="/icons/link.svg"

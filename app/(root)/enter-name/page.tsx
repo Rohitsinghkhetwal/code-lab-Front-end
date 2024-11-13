@@ -73,12 +73,8 @@ const NameComponent = () => {
   const handleCreateRoom = async() => {
     try {
       const room = await CreateRoom();
-      if(!roomLink) {
-        toast.error("Error")
-      }else {
-        router.push(`/${roomLink}`)
-      }
-      
+      console.log("this is the room from handle create room", room);
+        router.push(`/${room}`)
       // start from here 
       toast.success("Room created success !");
       
@@ -129,7 +125,7 @@ const NameComponent = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full space-y-4">
-            <h3 className="text-2xl font-semibold text-gray-800">{isUserLoggedIn ? 'Enter Room ID' : 'Enter Username and Room ID'}</h3>
+            <h3 className="text-2xl font-semibold text-gray-800">{isUserLoggedIn ? 'Enter Room ID' : 'Enter Username'}</h3>
 
             {/* Room ID Input */}
             {
@@ -153,18 +149,6 @@ const NameComponent = () => {
 
               )
             }
-        
-
-            {/* Username Input (only visible if user is not logged in) */}
-            {/* {!isUserLoggedIn && (
-              <input
-                type="text"
-                value={username || ""}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter Username"
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            )} */}
 
             <div className="flex justify-between">
               <button

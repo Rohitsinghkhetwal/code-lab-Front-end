@@ -124,6 +124,7 @@ const useStore = create<StoreState>()(
           console.log('result from store ', JSON.stringify(result, null, 2));
           const getRoomLink = result?.data?.result?.link;
           set({roomLink: getRoomLink});
+          return getRoomLink;
         }catch(err) {
           console.log("something went wrong !", err);
           throw err;
