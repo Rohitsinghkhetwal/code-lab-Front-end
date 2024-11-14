@@ -55,12 +55,13 @@ const AuthForm = ({ type }: { type: string }) => {
       if (type === "sign-in") {
         const result = await LogInUser(values);
         console.log("this is the USER from sign in ", result);
-        if(result) {
-          console.log("sign in value", result)
-
-          toast.success("User Logged in successfully!");
+        if(result.length === 0) {
+          toast.error("Wrong username or Password!");
+          return;
+        }else {
+          toast.success("Sign in sucess !")
           router.push("/");
-          
+
         }
         
       }

@@ -28,6 +28,8 @@ import jsPDF from "jspdf"
 import Image from "next/image";
 import toast from "react-hot-toast";
 import useStore from "@/Store/Store";
+import { LeaveRoom } from "@/app/(root)/api/room";
+import { useRouter } from "next/navigation";
 
 
 // Collaborative text editor with simple rich text, live cursors, and live avatars
@@ -93,8 +95,17 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   // Get user info from Liveblocks authentication endpoint
 
   const userInfo = useSelf((me) => me.info);
+  const router = useRouter();
   
-  const {  roomLink } = useStore()
+  const {  roomLink , users} = useStore();
+  const Link = useStore((state) => state.roomLink);
+  
+  const storedUserID = users[0]?.user?._id;
+  
+
+ 
+
+  
 
 
   // Set up editor with plugins, and place user info into Yjs awareness and cursors
@@ -204,9 +215,19 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   
   }
 
-  const leaveRoom = () => {
-    console.log("Leaving the room ....")
+  const leaveRoom = async(roomID: string, userID: string) => {
+    try {
+      const leave_room = await LeaveRoom(roomID, userID);
+      console.log("Hi you lefting the room after consoling", leave_room);
+      toast.success("You left the room");
+      router.push("/");
+    }catch(err) {
+      toast.error("Something wrong while leaving the room")
+      console.log("Somethig went wrong here !");
+      throw err;
 
+    }
+    console.log("Leaving the room ....");
   }
 
 
@@ -229,7 +250,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
         Download as Pdf
       </button>
 
-      <button className="bg-red-400 px-3 py-2 rounded text-white font-semibold" onClick={leaveRoom}>
+      <button className="bg-red-400 px-3 py-2 rounded text-white font-semibold" onClick={() => leaveRoom(Link,storedUserID)}>
         Leave
       </button>
 

@@ -51,3 +51,23 @@ export const checkUserLoggedInorNot = async() => {
     
   }
 }
+
+export const LeaveRoom = async(roomId: string, userId: string) => {
+  try {
+
+    const url = "http://localhost:9000/api/v1/room/leave-room";
+    const result = await axios.post(url, {
+      roomId: roomId,
+      userId: userId
+    }, {
+      withCredentials: true
+    });
+
+    console.log('result', JSON.stringify(result, null, 2))
+    return result;
+  }catch(err) {
+    console.log("Something went wrong while leaving the room", err);
+    throw err;
+
+  }
+}

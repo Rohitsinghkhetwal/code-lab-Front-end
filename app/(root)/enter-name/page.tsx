@@ -87,6 +87,11 @@ const NameComponent = () => {
 
   const handleSubmit = () => {
     try{
+      if(roomId != roomLink) {
+        toast.error("Please enter the valid room Id !");
+        return;
+      }
+      
       if(!roomId) {
         toast.error("Please Enter the roomID..")
         return;
