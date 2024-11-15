@@ -20,8 +20,7 @@ const NameComponent = () => {
   
   // if user is logged in join the room Immediately
   // if it is no loggedIn ask him name
-  const { CreateRoom , roomLink, users} = useStore()
-  console.log("this is the roomLink", roomLink)
+  const { CreateRoom , roomLink, users} = useStore();
   const hostId = users[0]?.user?._id;
 
 
@@ -87,11 +86,8 @@ const NameComponent = () => {
 
   const handleSubmit = () => {
     try{
-      if(roomId != roomLink) {
-        toast.error("Please enter the valid room Id !");
-        return;
-      }
       
+      //logic
       if(!roomId) {
         toast.error("Please Enter the roomID..")
         return;

@@ -121,7 +121,6 @@ const useStore = create<StoreState>()(
       CreateRoom: async() => {
         try {
           const result = await createRoom();
-          console.log('result from store ', JSON.stringify(result, null, 2));
           const getRoomLink = result?.data?.result?.link;
           set({roomLink: getRoomLink});
           return getRoomLink;

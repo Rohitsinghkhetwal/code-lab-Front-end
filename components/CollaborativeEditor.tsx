@@ -112,6 +112,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
 
   const editor = useEditor({
 
+
     editorProps: {
 
       attributes: {

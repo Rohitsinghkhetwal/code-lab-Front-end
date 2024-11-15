@@ -1,15 +1,11 @@
 import { Liveblocks } from "@liveblocks/node";
 
+
 import { NextRequest } from "next/server";
+import {  getRoomDetail } from "../room";
+import useStore from "@/Store/Store";
 
 
-/**
-
- * Authenticating your Liveblocks application
-
- * https://liveblocks.io/docs/authentication
-
- */
 
 
 const liveblocks = new Liveblocks({
@@ -18,8 +14,16 @@ const liveblocks = new Liveblocks({
 
 });
 
+let session;
 
 export async function POST(request: NextRequest) {
+
+  // const { searchParams } = new URL(request.url);
+  // const roomID = searchParams.get("roomId");
+  // console.log("Recieved RoomId", roomID);
+
+  // //fetch the api of getalll user of room in this component and display the presence of a user 
+  // // USER_INFO
 
   // Get the current user's unique id from your database
 
@@ -30,7 +34,7 @@ export async function POST(request: NextRequest) {
 
   // userInfo is made available in Liveblocks presence hooks, e.g. useOthers
 
-  const session = liveblocks.prepareSession(`user-${userId}`, {
+ session = liveblocks.prepareSession(`user-${userId}`, {
 
     userInfo: USER_INFO[userId],
 
@@ -52,6 +56,7 @@ export async function POST(request: NextRequest) {
   return new Response(body, { status });
 
 }
+console.log('session', JSON.stringify(session, null, 2))
 
 
 const USER_INFO = [
