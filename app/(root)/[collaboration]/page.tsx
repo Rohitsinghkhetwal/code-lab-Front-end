@@ -10,13 +10,11 @@ import Chats from "../chats/page";
 const Collaborations = () => {
   const { collaboration } = useParams();
 
+ 
+  
+
   const NormalRoomID = Array.isArray(collaboration) ? collaboration[0] : collaboration;
 
-
-
-
-
-  
   return (
     <div className="relative min-h-screen min-w-full">
       <main>

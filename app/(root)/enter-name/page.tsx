@@ -3,7 +3,7 @@ import useStore from '@/Store/Store';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
-import { AddUserToRoom, checkUserLoggedInorNot } from '../api/room';
+import { AddUserToRoom, checkUserLoggedInorNot, getRoomDetail } from '../api/room';
 
 
 const NameComponent = () => {
@@ -109,6 +109,16 @@ const NameComponent = () => {
     }
   }
 
+  const roomDetails = async(id:string) => {
+    try{
+      const result = await getRoomDetail(id);
+      console.log("this is the result", result)
+      return result;
+    }catch(err) {
+      console.log("something went wrong here !")
+    }
+  }
+
 
   return (
    
@@ -120,6 +130,10 @@ const NameComponent = () => {
 
       <button className='bg-slate-500 px-4 py-2 text-white rounded' onClick={() => joinRoom()}>
         Join Room
+      </button>
+      <button className='bg-slate-400 px-4 py-4' onClick={() => roomDetails("e82EghGswTuci2SiOauezNL3rxEpovv6Qc3alDIM")}>
+        RoomDetail
+
       </button>
 
 

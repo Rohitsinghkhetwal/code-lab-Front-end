@@ -3,10 +3,6 @@ import { Liveblocks } from "@liveblocks/node";
 
 import { NextRequest } from "next/server";
 import {  getRoomDetail } from "../room";
-import useStore from "@/Store/Store";
-
-
-
 
 const liveblocks = new Liveblocks({
 
@@ -17,15 +13,27 @@ const liveblocks = new Liveblocks({
 let session;
 
 export async function POST(request: NextRequest) {
+  try {
+    const url = new URL(request.url);
+    const roomId = url.searchParams.get("roomId");
+  
+    if(!roomId) {
+      return new Response("roomId is required !", {status: 400});
+    }
 
-  // const { searchParams } = new URL(request.url);
-  // const roomID = searchParams.get("roomId");
-  // console.log("Recieved RoomId", roomID);
+  let result;
+  // try {
+  //   result = await getRoomDetail(roomId);
+  //   console.log("this is the detail", result);
+  // }catch(err) {
+  //   console.log("error fetching detail", err)
+  //   return new Response("something went wrong while fetching the result", {status: 500})
 
-  // //fetch the api of getalll user of room in this component and display the presence of a user 
-  // // USER_INFO
+  // }
 
-  // Get the current user's unique id from your database
+  //const getUser = await getRoomDetail("e82EghGswTuci2SiOauezNL3rxEpovv6Qc3alDIM");
+
+  console.log("get user api here !", roomId);
 
   const userId = Math.floor(Math.random() * 10) % USER_INFO.length;
 
@@ -54,6 +62,12 @@ export async function POST(request: NextRequest) {
   console.log('session', JSON.stringify(session, null, 2))
 
   return new Response(body, { status });
+
+}catch(err) {
+  console.log("Error during post request", err);
+  return new Response("Internal server error", {status: 500})
+}
+
 
 }
 console.log('session', JSON.stringify(session, null, 2))
