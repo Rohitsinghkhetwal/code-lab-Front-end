@@ -1,8 +1,10 @@
+
 import { Liveblocks } from "@liveblocks/node";
 
 
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {  getRoomDetail } from "../room";
+import { User } from "lucide-react";
 
 const liveblocks = new Liveblocks({
 
@@ -10,49 +12,40 @@ const liveblocks = new Liveblocks({
 
 });
 
-let session;
 
 export async function POST(request: NextRequest) {
-  try {
-    const url = new URL(request.url);
-    const roomId = url.searchParams.get("roomId");
-  
-    if(!roomId) {
-      return new Response("roomId is required !", {status: 400});
+
+  // const url = new URL(request.url)
+  // const room = url.searchParams.get("roomId") 
+  // console.log('this is the roomId', room)
+
+  const roomId = 'yI70s1EGNqOi54qWEKOPwPUUn2HOfKk5eyaAhdxy'
+ let getDetail = await getRoomDetail(roomId);
+ console.log("this is getRoomDetail", getDetail);
+ const res = getDetail.users;
+ const User_info = res.map((items: any) => (items.userId));
+ console.log("this is the ids", User_info);
+
+ if(!User_info) {
+  return new Response(JSON.stringify({error: "User info not found !"}), {
+    status: 400,
+  })
+ }
+
+ const userId = Math.floor(Math.random() * 10) % User_info.length;
+
+  let session = liveblocks.prepareSession(`user-${User_info}`, {
+    userInfo: {
+      name: "Rohit",
+      color: "red",
+      picture:"https://liveblocks.io/avatars/avatar-1.png"
     }
 
-  let result;
-  // try {
-  //   result = await getRoomDetail(roomId);
-  //   console.log("this is the detail", result);
-  // }catch(err) {
-  //   console.log("error fetching detail", err)
-  //   return new Response("something went wrong while fetching the result", {status: 500})
-
-  // }
-
-  //const getUser = await getRoomDetail("e82EghGswTuci2SiOauezNL3rxEpovv6Qc3alDIM");
-
-  console.log("get user api here !", roomId);
-
-  const userId = Math.floor(Math.random() * 10) % USER_INFO.length;
-
-
-  // Create a session for the current user
-
-  // userInfo is made available in Liveblocks presence hooks, e.g. useOthers
-
- session = liveblocks.prepareSession(`user-${userId}`, {
-
-    userInfo: USER_INFO[userId],
-
   });
-
 
   // Use a naming pattern to allow access to rooms with a wildcard
 
   session.allow(`*`, session.FULL_ACCESS);
-
 
   // Authorize the user and return the result
 
@@ -60,17 +53,9 @@ export async function POST(request: NextRequest) {
   console.log('body', JSON.stringify(body, null, 2))
   console.log('status', JSON.stringify(status, null, 2))
   console.log('session', JSON.stringify(session, null, 2))
-
   return new Response(body, { status });
 
-}catch(err) {
-  console.log("Error during post request", err);
-  return new Response("Internal server error", {status: 500})
 }
-
-
-}
-console.log('session', JSON.stringify(session, null, 2))
 
 
 const USER_INFO = [

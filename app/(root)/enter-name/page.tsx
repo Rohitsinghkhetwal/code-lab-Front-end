@@ -112,7 +112,7 @@ const NameComponent = () => {
   const roomDetails = async(id:string) => {
     try{
       const result = await getRoomDetail(id);
-      console.log("this is the result", result)
+      console.log('result', JSON.stringify(result, null, 2))
       return result;
     }catch(err) {
       console.log("something went wrong here !")
