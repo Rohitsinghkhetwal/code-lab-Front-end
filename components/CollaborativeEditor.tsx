@@ -93,6 +93,7 @@ type EditorProps = {
 function TiptapEditor({ doc, provider }: EditorProps) {
 
   // Get user info from Liveblocks authentication endpoint
+  const clearLink = useStore((state) => state.ClearRoomLink);
 
   const userInfo = useSelf((me) => me.info);
   const router = useRouter();
@@ -221,6 +222,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
       const leave_room = await LeaveRoom(roomID, userID);
       console.log("Hi you lefting the room after consoling", leave_room);
       toast.success("You left the room");
+      clearLink();
       router.push("/");
     }catch(err) {
       toast.error("Something wrong while leaving the room")

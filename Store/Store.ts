@@ -41,6 +41,7 @@ interface StoreState {
   SignUpUser: (signupUsers: SignUpUserProps) => Promise<User[]>;
   Logout: () => Promise<void>;
   CreateRoom: () => Promise<void>
+  ClearRoomLink: () => void
 
   
 }
@@ -129,6 +130,10 @@ const useStore = create<StoreState>()(
           throw err;
 
         }
+      },
+
+      ClearRoomLink: () => {
+        set({ roomLink: ""});
       }
       
     }),

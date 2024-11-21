@@ -19,11 +19,11 @@ export async function POST(request: NextRequest) {
   // const room = url.searchParams.get("roomId") 
   // console.log('this is the roomId', room)
 
-  const roomId = 'yI70s1EGNqOi54qWEKOPwPUUn2HOfKk5eyaAhdxy'
+  const roomId = 'hTTCRKXOe6ux1RKhGNI2zvMrGYOrMPq370wb16c1'
  let getDetail = await getRoomDetail(roomId);
  console.log("this is getRoomDetail", getDetail);
  const res = getDetail.users;
- const User_info = res.map((items: any) => (items.userId));
+ const User_info = res.map((items: any) => (items.username));
  console.log("this is the ids", User_info);
 
  if(!User_info) {
@@ -34,12 +34,13 @@ export async function POST(request: NextRequest) {
 
  const userId = Math.floor(Math.random() * 10) % User_info.length;
 
-  let session = liveblocks.prepareSession(`user-${User_info}`, {
+  let session = liveblocks.prepareSession(`user-${User_info[userId]}`, {
     userInfo: {
-      name: "Rohit",
-      color: "red",
+      name: User_info[userId],
+      color: "#D583F0",
       picture:"https://liveblocks.io/avatars/avatar-1.png"
     }
+    // userInfo: User_info[userId]
 
   });
 

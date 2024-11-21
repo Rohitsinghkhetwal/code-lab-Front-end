@@ -109,15 +109,6 @@ const NameComponent = () => {
     }
   }
 
-  const roomDetails = async(id:string) => {
-    try{
-      const result = await getRoomDetail(id);
-      console.log('result', JSON.stringify(result, null, 2))
-      return result;
-    }catch(err) {
-      console.log("something went wrong here !")
-    }
-  }
 
 
   return (
@@ -130,10 +121,6 @@ const NameComponent = () => {
 
       <button className='bg-slate-500 px-4 py-2 text-white rounded' onClick={() => joinRoom()}>
         Join Room
-      </button>
-      <button className='bg-slate-400 px-4 py-4' onClick={() => roomDetails("e82EghGswTuci2SiOauezNL3rxEpovv6Qc3alDIM")}>
-        RoomDetail
-
       </button>
 
 

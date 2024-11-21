@@ -19,7 +19,7 @@ export function Avatars() {
         return (
 
           // <Avatar key={connectionId} picture={info.picture} name={info.name} />
-          <h1>id:</h1>
+          <h1>user</h1>
 
         );
 
