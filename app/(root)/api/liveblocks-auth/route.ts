@@ -4,7 +4,6 @@ import { Liveblocks } from "@liveblocks/node";
 
 import { NextRequest, NextResponse } from "next/server";
 import {  getRoomDetail } from "../room";
-import { User } from "lucide-react";
 
 const liveblocks = new Liveblocks({
 
@@ -19,7 +18,7 @@ export async function POST(request: NextRequest) {
   // const room = url.searchParams.get("roomId") 
   // console.log('this is the roomId', room)
 
-  const roomId = 'hTTCRKXOe6ux1RKhGNI2zvMrGYOrMPq370wb16c1'
+  const roomId = '9zy7qlJrgmeeZaPTrU8CM0D4E8R8EpFi6PIG2mBh'
  let getDetail = await getRoomDetail(roomId);
  console.log("this is getRoomDetail", getDetail);
  const res = getDetail.users;
@@ -32,7 +31,10 @@ export async function POST(request: NextRequest) {
   })
  }
 
- const userId = Math.floor(Math.random() * 10) % User_info.length;
+ const userId = Math.floor(Math.random() * User_info.length);
+//  const userId = Math.floor(Math.random() * 10) % User_info.length;
+// 9zy7qlJrgmeeZaPTrU8CM0D4E8R8EpFi6PIG2mBh
+
 
   let session = liveblocks.prepareSession(`user-${User_info[userId]}`, {
     userInfo: {
@@ -43,6 +45,7 @@ export async function POST(request: NextRequest) {
     // userInfo: User_info[userId]
 
   });
+  console.log("this is the random id ", userId)
 
   // Use a naming pattern to allow access to rooms with a wildcard
 
@@ -59,86 +62,86 @@ export async function POST(request: NextRequest) {
 }
 
 
-const USER_INFO = [
+// const USER_INFO = [
 
-  {
+//   {
 
-    name: "Charlie Layne",
+//     name: "Charlie Layne",
 
-    color: "#D583F0",
+//     color: "#D583F0",
 
-    picture: "https://liveblocks.io/avatars/avatar-1.png",
+//     picture: "https://liveblocks.io/avatars/avatar-1.png",
 
-  },
+//   },
 
-  {
+//   {
 
-    name: "Mislav Abha",
+//     name: "Mislav Abha",
 
-    color: "#F08385",
+//     color: "#F08385",
 
-    picture: "https://liveblocks.io/avatars/avatar-2.png",
+//     picture: "https://liveblocks.io/avatars/avatar-2.png",
 
-  },
+//   },
 
-  {
+//   {
 
-    name: "Tatum Paolo",
+//     name: "Tatum Paolo",
 
-    color: "#F0D885",
+//     color: "#F0D885",
 
-    picture: "https://liveblocks.io/avatars/avatar-3.png",
+//     picture: "https://liveblocks.io/avatars/avatar-3.png",
 
-  },
+//   },
 
-  {
+//   {
 
-    name: "Anjali Wanda",
+//     name: "Anjali Wanda",
 
-    color: "#85EED6",
+//     color: "#85EED6",
 
-    picture: "https://liveblocks.io/avatars/avatar-4.png",
+//     picture: "https://liveblocks.io/avatars/avatar-4.png",
 
-  },
+//   },
 
-  {
+//   {
 
-    name: "Jody Hekla",
+//     name: "Jody Hekla",
 
-    color: "#85BBF0",
+//     color: "#85BBF0",
 
-    picture: "https://liveblocks.io/avatars/avatar-5.png",
+//     picture: "https://liveblocks.io/avatars/avatar-5.png",
 
-  },
+//   },
 
-  {
+//   {
 
-    name: "Emil Joyce",
+//     name: "Emil Joyce",
 
-    color: "#8594F0",
+//     color: "#8594F0",
 
-    picture: "https://liveblocks.io/avatars/avatar-6.png",
+//     picture: "https://liveblocks.io/avatars/avatar-6.png",
 
-  },
+//   },
 
-  {
+//   {
 
-    name: "Jory Quispe",
+//     name: "Jory Quispe",
 
-    color: "#85DBF0",
+//     color: "#85DBF0",
 
-    picture: "https://liveblocks.io/avatars/avatar-7.png",
+//     picture: "https://liveblocks.io/avatars/avatar-7.png",
 
-  },
+//   },
 
-  {
+//   {
 
-    name: "Quinn Elton",
+//     name: "Quinn Elton",
 
-    color: "#87EE85",
+//     color: "#87EE85",
 
-    picture: "https://liveblocks.io/avatars/avatar-8.png",
+//     picture: "https://liveblocks.io/avatars/avatar-8.png",
 
-  },
+//   },
 
-];
+// ];

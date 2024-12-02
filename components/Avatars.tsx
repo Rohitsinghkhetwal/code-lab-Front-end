@@ -18,15 +18,14 @@ export function Avatars() {
 
         return (
 
-          // <Avatar key={connectionId} picture={info.picture} name={info.name} />
-          <h1>user</h1>
+          <Avatar key={connectionId} picture={info.picture} name={info.name} />
 
         );
 
       })}
 
 
-      {/* {currentUser && (
+      {currentUser && (
 
         <div className="relative ml-8 first:ml-0">
 
@@ -40,7 +39,7 @@ export function Avatars() {
 
         </div>
 
-      )} */}
+      )}
 
     </div>
 
