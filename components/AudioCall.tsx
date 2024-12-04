@@ -15,6 +15,14 @@ interface AudioCallProps {
 
 const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
 
+  
+  if (!username && !userId) {
+    throw new Error("Either username or userId must be provided.");
+  }
+  if (username && userId) {
+    throw new Error("Only one of username or userId should be provided.");
+  }
+
   //audio call functionality
   const [users , setusers] = useState<User[]>([])
   const [ muted, setMuted] = useState(false);
