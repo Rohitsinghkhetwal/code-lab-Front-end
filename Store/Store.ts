@@ -42,6 +42,7 @@ interface StoreState {
   Logout: () => Promise<void>;
   CreateRoom: () => Promise<void>
   ClearRoomLink: () => void
+  updateRoomLink: (link: string) => void
 
   
 }
@@ -134,6 +135,10 @@ const useStore = create<StoreState>()(
 
       ClearRoomLink: () => {
         set({ roomLink: ""});
+      },
+
+      updateRoomLink: (link) => {
+        set({ roomLink: link})
       }
       
     }),

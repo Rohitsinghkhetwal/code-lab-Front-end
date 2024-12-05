@@ -20,7 +20,7 @@ const NameComponent = () => {
   
   // if user is logged in join the room Immediately
   // if it is no loggedIn ask him name
-  const { CreateRoom , roomLink, users} = useStore();
+  const { CreateRoom , roomLink, users, updateRoomLink:updateLink } = useStore();
   const hostId = users[0]?.user?._id;
 
 
@@ -54,7 +54,8 @@ const NameComponent = () => {
 
       if(isLoggedIn && roomId) {
         const result = await AddUserToRoom(hostId, roomId, username)
-        if(roomLink) {
+        if(roomId) {
+          updateLink(roomId)
           toast.success("Joining the room ...")
         }
         router.push(`/${roomId}`)

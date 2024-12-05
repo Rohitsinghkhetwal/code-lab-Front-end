@@ -99,7 +99,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   const router = useRouter();
   
   const {  roomLink , users} = useStore();
-  const Link = useStore((state) => state.roomLink);
+  
   
   const storedUserID = users[0]?.user?._id;
   
@@ -253,7 +253,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
         Download as Pdf
       </button>
 
-      <button className="bg-red-400 px-3 py-2 rounded text-white font-semibold" onClick={() => leaveRoom(Link,storedUserID)}>
+      <button className="bg-red-400 px-3 py-2 rounded text-white font-semibold" onClick={() => leaveRoom(roomLink,storedUserID)}>
         Leave
       </button>
 
@@ -268,9 +268,9 @@ function TiptapEditor({ doc, provider }: EditorProps) {
 
 
       </div>
-    
-
-      <EditorContent editor={editor} className={styles.editorContainer} />
+      <div className={styles.editorContainer}>
+      <EditorContent editor={editor}/>
+      </div>
 
     
 
