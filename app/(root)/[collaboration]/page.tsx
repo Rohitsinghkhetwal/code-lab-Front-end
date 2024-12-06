@@ -12,14 +12,14 @@ const Collaborations = () => {
     : collaboration;
 
   return (
-    <div className="flex min-h-screen w-full ">
-      <main className="flex-1 bg-black-200 w-[60%]">
+    <div className="flex flex-col lg:flex-row min-h-screen w-full ">
+      <main className="flex-1 bg-black-200 w-full lg:w-[60%] order-1 lg:order-none">
         <Room roomId={NormalRoomID}>
           <CollaborativeEditor />
         </Room>
       </main>
 
-      <aside className="w-[26%] p-4 border-l">
+      <aside className="w-full lg:w-[26%] p-4 border-t lg:border-t-0 lg:border-l order-2">
         <Chats />
       </aside>
     </div>

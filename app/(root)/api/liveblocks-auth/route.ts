@@ -32,9 +32,6 @@ export async function POST(request: NextRequest) {
  }
 
  const userId = Math.floor(Math.random() * User_info.length);
-//  const userId = Math.floor(Math.random() * 10) % User_info.length;
-// 9zy7qlJrgmeeZaPTrU8CM0D4E8R8EpFi6PIG2mBh
-
 
   let session = liveblocks.prepareSession(`user-${User_info[userId]}`, {
     userInfo: {
