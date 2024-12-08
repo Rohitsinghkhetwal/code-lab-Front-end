@@ -1,7 +1,7 @@
-import { getRoomDetail } from "@/app/(root)/api/room";
 import React, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import useStore from "@/Store/Store";
+import { Stream } from "stream";
 
 interface User {
   userId: string | null;
@@ -16,7 +16,7 @@ interface AudioCallProps {
 }
 
 const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
-  const { roomLink } = useStore();
+  const { setLocalStream } = useStore();
 
   if (!username && !userId) {
     throw new Error("Either username or userId must be provided.");
@@ -191,9 +191,11 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
   const getLocalStream = async (): Promise<MediaStream> => {
     if (!localStream.current) {
       try {
-        localStream.current = await navigator.mediaDevices.getUserMedia({
+        const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
+        localStream.current = stream;
+        setLocalStream(stream);
       } catch (err) {
         console.log("error accessing microphone", err);
         throw new Error("Could not access microphone");
@@ -224,17 +226,6 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
     }
   };
 
-  // const getUser = async () => {
-  //   try {
-  //     const room = "9zy7qlJrgmeeZaPTrU8CM0D4E8R8EpFi6PIG2mBh";
-  //     const roomDetail = await getRoomDetail(room);
-  //     const response = roomDetail.users;
-  //     setResult(response);
-  //   } catch (err) {
-  //     console.log("something went wrong ", err);
-  //   }
-  // };
-
   return (
     <div className="flex flex-col items-center h-screens p-4">
       {/* Room Title */}
@@ -250,8 +241,6 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
           className="border border-gray-300 rounded-md shadow-md w-64"
         />
       </div>
-
-      {/* Mute/Unmute Button */}
 
       {/* Users in Room */}
       <div className="flex justify-center items-center bg-gray-100">

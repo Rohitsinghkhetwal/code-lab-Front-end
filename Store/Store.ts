@@ -43,6 +43,9 @@ interface StoreState {
   CreateRoom: () => Promise<void>
   ClearRoomLink: () => void
   updateRoomLink: (link: string) => void
+  localStream: MediaStream | null;
+  setLocalStream: (stream: MediaStream) => void
+  clearLocalStream: () => void
 
   
 }
@@ -139,7 +142,11 @@ const useStore = create<StoreState>()(
 
       updateRoomLink: (link) => {
         set({ roomLink: link})
-      }
+      },
+
+      localStream: null,
+      setLocalStream: (stream) => set({localStream: stream}),
+      clearLocalStream: () => set({ localStream: null})
       
     }),
     {

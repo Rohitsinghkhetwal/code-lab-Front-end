@@ -218,7 +218,15 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   }
 
   const leaveRoom = async(roomID: string, userID: string) => {
+    const { localStream, clearLocalStream } = useStore.getState();
+    console.log("Local Stream", localStream);
     try {
+
+      if(localStream instanceof MediaStream) {
+        localStream.getTracks().forEach((track) => track.stop());
+        clearLocalStream();
+        console.log("microphone turned off")
+      }
       const leave_room = await LeaveRoom(roomID, userID);
       console.log("Hi you lefting the room after consoling", leave_room);
       toast.success("You left the room");

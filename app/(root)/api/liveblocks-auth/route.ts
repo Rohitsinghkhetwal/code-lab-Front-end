@@ -5,6 +5,7 @@ import { Liveblocks } from "@liveblocks/node";
 import { NextRequest, NextResponse } from "next/server";
 import {  getRoomDetail } from "../room";
 
+
 const liveblocks = new Liveblocks({
 
   secret: process.env.LIVEBLOCKS_SECRET_KEY!
@@ -14,12 +15,31 @@ const liveblocks = new Liveblocks({
 
 export async function POST(request: NextRequest) {
 
-  // const url = new URL(request.url)
-  // const room = url.searchParams.get("roomId") 
-  // console.log('this is the roomId', room)
+  // const Room = await request.json();
+  // const { roomLink } = Room;
 
-  const roomId = '9zy7qlJrgmeeZaPTrU8CM0D4E8R8EpFi6PIG2mBh'
- let getDetail = await getRoomDetail(roomId);
+  //console.log("this is the roomLink", roomLink)
+  const roomLINK = await request.json();
+  console.log("this is a Room", roomLINK);
+  const { room } = roomLINK 
+  console.log("ROOMLINK", room)
+
+  if(!room) {
+    return NextResponse.json(
+      {
+        error: "roomLink is required"
+      },
+      {
+        status: 400,
+      }
+    )
+  }
+  console.log("this is RoomLink after condition", room)
+
+
+
+  //const roomId = '9zy7qlJrgmeeZaPTrU8CM0D4E8R8EpFi6PIG2mBh'
+ let getDetail = await getRoomDetail(room);
  console.log("this is getRoomDetail", getDetail);
  const res = getDetail.users;
  const User_info = res.map((items: any) => (items.username));
