@@ -17,9 +17,7 @@ const AuthForm = ({ type }: { type: string }) => {
   const router = useRouter();
 
   const { LogInUser, Loading, SignUpUser, users} = useStore();
-
-  console.log('User from AuthForm @##$@!!!!', JSON.stringify(users, null, 2))
-  console.log("test", users[0]?.user?._id);
+  console.log("THIS IS THE LOADING STATE OF A FORM", Loading)
 
   
 

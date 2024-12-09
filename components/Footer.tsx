@@ -12,7 +12,7 @@ interface footerProps {
 const Footer = ({type='desktop'}:footerProps) => {
   const {users, Logout} = useStore();
   const router = useRouter();
-  const Username = users[0]?.user;
+  const Username = (users[0] as any)?.user;
 
   // logout functionality
   const handleLogout = async() => {

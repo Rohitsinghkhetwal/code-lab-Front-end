@@ -13,6 +13,9 @@ export function Providers({ children }: PropsWithChildren) {
   useEffect(() => {
     const getId = async() => {
       try {
+        if(!roomLink) {
+          return;
+        }
         const response = await fetch("/api/liveblocks-auth", {
           method: "POST",
           headers: {

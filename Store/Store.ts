@@ -1,4 +1,5 @@
-import { AddUserToRoom, createRoom } from "@/app/(root)/api/room";
+
+import { getRoomDetail, createRoom } from "@/app/(root)/api/room";
 import axios from "axios";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -22,7 +23,7 @@ interface UserCookiesProps {
 interface SignUpUserProps {
   email: string;
   password: string;
-  username: string;
+  username: string | undefined;
 }
 
 interface createRoomProps {
@@ -30,10 +31,13 @@ interface createRoomProps {
   name: string;
 }
 
+
+
 // store state of our state
 
 interface StoreState {
-  users: User[];
+  users: User[],
+  joinedUser: string[],
   roomLink: string,
   rooms: createRoomProps[];
   LogInUser: (user: UserLoginProps) => Promise<UserCookiesProps[]>;
@@ -46,21 +50,23 @@ interface StoreState {
   localStream: MediaStream | null;
   setLocalStream: (stream: MediaStream) => void
   clearLocalStream: () => void
-
-  
+  fetchJoinedUser: (roomLink: string) => Promise<void>
 }
 
 const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
       users: [],
+      joinedUser: [],
       roomLink: "",
       rooms: [],
       Loading: false,
       LogInUser: async (user: UserLoginProps): Promise<UserCookiesProps[]> => {
         set({ Loading: true });
         try {
-          const url = "http://localhost:9000/api/v1/users/login";
+          const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/users/login`;
+          
+          //const url = "http://localhost:9000/api/v1/users/login";
           const result = await axios.post(
             url,
             {
@@ -88,7 +94,8 @@ const useStore = create<StoreState>()(
       SignUpUser: async (signupUsers: SignUpUserProps): Promise<User[]> => {
         set({ Loading: true });
         try {
-          const signUpurl = "http://localhost:9000/api/v1/users/sign-up";
+           
+          const signUpurl = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/users/sign-up`;
           const res = await axios.post(signUpurl, {
             email: signupUsers.email,
             password: signupUsers.password,
@@ -109,7 +116,7 @@ const useStore = create<StoreState>()(
       //logout functionality
       Logout: async () => {
         try {
-          const url = "http://localhost:9000/api/v1/users/log-out";
+          const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/users/log-out`;
           const res = await axios.post(
             url,
             {},
@@ -146,12 +153,34 @@ const useStore = create<StoreState>()(
 
       localStream: null,
       setLocalStream: (stream) => set({localStream: stream}),
-      clearLocalStream: () => set({ localStream: null})
+      clearLocalStream: () => set({ localStream: null}),
+
+      fetchJoinedUser: async(roomId: string) => {
+        try{
+          const response = await getRoomDetail(roomId);
+          const res = response.users.map((user: any) => (user.username));
+          set({joinedUser: res})
+        }catch(err) {
+          console.log("something wrong while fetching the users");
+          throw err;
+        }
+
+      }
       
     }),
     {
       name: "codelab-storage",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => {
+        if(typeof window !== "undefined") {
+          return localStorage
+        }else {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          }
+        }
+      })
     }
   )
 );

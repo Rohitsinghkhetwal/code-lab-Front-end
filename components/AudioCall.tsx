@@ -1,7 +1,8 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import useStore from "@/Store/Store";
-import { Stream } from "stream";
 
 interface User {
   userId: string | null;
@@ -16,7 +17,7 @@ interface AudioCallProps {
 }
 
 const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
-  const { setLocalStream } = useStore();
+  const { setLocalStream, roomLink, fetchJoinedUser, joinedUser } = useStore();
 
   if (!username && !userId) {
     throw new Error("Either username or userId must be provided.");
@@ -44,7 +45,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
   };
 
   useEffect(() => {
-    const socket = io("http://localhost:9000");
+    const socket = io("https://codelab-backend-mx5k.onrender.com");
     socketRef.current = socket;
 
     socket.emit("join-room", { roomId, userId, username });
@@ -226,14 +227,13 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
     }
   };
 
+
   return (
     <div className="flex flex-col items-center h-screens p-4">
-      {/* Room Title */}
       <h1 className="text-xs font-bold text-gray-800 mb-3">
         Room: <span className="text-indigo-500">{roomId}</span>
       </h1>
 
-      {/* Audio Player */}
       <div className="mb-2">
         <audio
           ref={localStreamRef}
@@ -242,9 +242,8 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
         />
       </div>
 
-      {/* Users in Room */}
       <div className="flex justify-center items-center bg-gray-100">
-        <div className="w-80 p-6 bg-white shadow-lg rounded-lg">
+        <div className="w-80 p-6 bg-white shadow-lg rounded-lg bg-red-200">
           <div className="flex justify-center">
             <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg">
               <svg
@@ -270,20 +269,40 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
             Connect with others seamlessly.
           </p>
           <div className="flex justify-center items-center">
-          <button
-            onClick={toggleMute}
-            className={`text-center px-6 py-2 text-white font-semibold rounded-md transition-all ${
-              muted
-                ? "bg-red-500 hover:bg-red-300"
-                : "bg-green-500 hover:bg-green-600"
-            }`}
-          >
-            {muted ? "Unmute" : "Mute"}
-          </button>
-
+            <button
+              onClick={toggleMute}
+              className={`text-center px-6 py-2 text-white font-semibold rounded-md transition-all ${
+                muted
+                  ? "bg-red-500 hover:bg-red-300"
+                  : "bg-green-500 hover:bg-green-600"
+              }`}
+            >
+              {muted ? "Unmute" : "Mute"}
+            </button>
           </div>
-          
         </div>
+      </div>
+
+      <div className="bg-white shadow-md rounded-lg p-4  mx-auto my-6">
+        <h2 className="text-lg font-bold mb-4 text-gray-800">Joined User</h2>
+        <ul>
+          {joinedUser.map((user: string, ind: number) => (
+            <li
+              key={ind}
+              className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-100"
+            >
+              <span className="text-gray-700 font-medium">{user}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                className="w-5 h-5 text-gray-600"
+              >
+                <path d="M8 11a3 3 0 0 0 3-3V4a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3zm4-3a4 4 0 0 1-8 0H3a5 5 0 0 0 10 0h-1zm-4 4a5.001 5.001 0 0 0 4.546-2.914c.178.25.285.57.285.914v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1c0-.345.107-.664.285-.914A5.001 5.001 0 0 0 8 12zm1 3a1 1 0 0 1-2 0h2z" />
+              </svg>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

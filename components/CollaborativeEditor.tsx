@@ -101,7 +101,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   const {  roomLink , users} = useStore();
   
   
-  const storedUserID = users[0]?.user?._id;
+  const storedUserID = (users[0] as any)?.user?._id;
   
 
  

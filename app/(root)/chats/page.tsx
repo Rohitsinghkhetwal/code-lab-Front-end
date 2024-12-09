@@ -1,3 +1,4 @@
+"use client"
 import AudioCall from '@/components/AudioCall'
 import useStore from '@/Store/Store'
 import React from 'react'
@@ -8,7 +9,7 @@ const Chats = () => {
   const { users , roomLink} = useStore();
   console.log("this is the roomLink rom the chat", roomLink);
   console.log('users', JSON.stringify(users, null, 2))
-  const userId = users[0].user?._id;
+  const userId = (users[0] as any).user?._id;
   console.log("jfjksjfls", userId)
   const name = null
 

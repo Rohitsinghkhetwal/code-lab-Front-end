@@ -21,7 +21,7 @@ const NameComponent = () => {
   // if user is logged in join the room Immediately
   // if it is no loggedIn ask him name
   const { CreateRoom , roomLink, users, updateRoomLink:updateLink } = useStore();
-  const hostId = users[0]?.user?._id;
+  const hostId = (users[0] as any)?.user?._id;
 
 
 

@@ -52,7 +52,7 @@ const Navoptions = () => {
           );
         })}
       </nav>
-      <Footer />
+      <Footer type={"desktop"} />
     </section>
   );
 };

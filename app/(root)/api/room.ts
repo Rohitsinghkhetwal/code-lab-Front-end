@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const createRoom = async () => {
   try {
-    const url = "http://localhost:9000/api/v1/room/create-room";
+    const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/room/create-room`;
     const result = await axios.post(
       url,
       {},
@@ -22,9 +22,8 @@ export const AddUserToRoom = async (
   roomId: string,
   username: string | null
 ) => {
-  console.log("this is the roomId  from api", roomId);
   try {
-    const url = `http://localhost:9000/api/v1/room/join-room/${roomId}`;
+    const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/room/join-room/${roomId}`;
     // meeting link will be come from backend and
     // userId will be the users id will come from justand
     const data = await axios.post(
@@ -37,7 +36,6 @@ export const AddUserToRoom = async (
         withCredentials: true,
       }
     );
-    console.log("This is the data from room.ts", JSON.stringify(data, null, 2));
 
     return data;
   } catch (err) {
@@ -47,7 +45,7 @@ export const AddUserToRoom = async (
 
 export const checkUserLoggedInorNot = async () => {
   try {
-    const url = "http://localhost:9000/api/v1/validator/validate";
+    const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/validator/validate`;
     const data = await axios.post(
       url,
       {},
@@ -63,7 +61,7 @@ export const checkUserLoggedInorNot = async () => {
 
 export const LeaveRoom = async (roomId: string, userId: string) => {
   try {
-    const url = "http://localhost:9000/api/v1/room/leave-room";
+    const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/room/leave-room`;
     const result = await axios.post(
       url,
       {
@@ -74,8 +72,6 @@ export const LeaveRoom = async (roomId: string, userId: string) => {
         withCredentials: true,
       }
     );
-
-    console.log("result", JSON.stringify(result, null, 2));
     return result;
   } catch (err) {
     console.log("Something went wrong while leaving the room", err);
@@ -85,14 +81,13 @@ export const LeaveRoom = async (roomId: string, userId: string) => {
 
 export const getRoomDetail = async (roomId: string) => {
   try {
-    const getRoomDetailUrl = `http://localhost:9000/api/v1/room/getAll-room/${roomId}`;
+    const getRoomDetailUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/room/getAll-room/${roomId}`;
     const response = await axios.get(
       getRoomDetailUrl,
       {
         withCredentials: true
       }
     );
-    console.log("this is a response from a room", response);
     return response.data;
   } catch (err) {
     console.log("Something went wrong while getting the room Detail");

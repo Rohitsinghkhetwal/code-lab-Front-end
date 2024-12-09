@@ -4,10 +4,4 @@ export const sidebarLinks = [
     route: "/",
     label: "Collaborations"
   },
-  {
-    imgURL: "/icons/chat.svg",
-    route: "/chats",
-    label: "Chats"
-  },
- 
 ]

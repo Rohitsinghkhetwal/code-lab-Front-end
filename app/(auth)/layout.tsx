@@ -1,11 +1,17 @@
+"use client"
 import CustomToaster from "@/components/Toaster";
 import Image from "next/image";
+import { useEffect } from "react";
+import useStore from "@/Store/Store";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useEffect(() => {
+    useStore.setState({ Loading: false });
+  }, []);
   return (
     <main className="flex min-h-screen w-full justify-between font-inter">
       <CustomToaster/>
