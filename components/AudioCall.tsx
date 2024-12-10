@@ -5,27 +5,35 @@ import { io, Socket } from "socket.io-client";
 import useStore from "@/Store/Store";
 
 interface User {
-  userId: string | null;
+  userId: string;
   username: string | null;
   socketId: string;
 }
 
-interface AudioCallProps {
-  roomId: string;
-  userId: string | null;
-  username: string | null;
-}
+// interface AudioCallProps {
+//   roomId: string;
+//   userId: string;
+//   username: string | null;
+// }
 
-const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
+const AudioCall: React.FC = () => {
 
-  console.log("this is the userId AUDIOCALL",userId);
-  console.log("this is the room USERID" , roomId);
   const {
     setLocalStream,
     joinedUser,
     addUser,
     removeUser,
+    roomLink,
+    users,
+    fetchJoinedUser
   } = useStore();
+
+  const userId = users[0]?.user?._id;
+  const userName = users[0]?.user?.username;
+  console.log("AUDIO CALL COMPONENT USERID", userId)
+  
+  const username = null
+
 
   if (!username && !userId) {
     throw new Error("Either username or userId must be provided.");
@@ -52,25 +60,28 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
   };
 
   useEffect(() => {
+    if(!socketRef.current) {
     const socket = io("https://codelab-backend-mx5k.onrender.com");
     socketRef.current = socket;
 
-    socket.emit("join-room", { roomId, userId, username });
+    socket.emit("join-room", { roomLink, userId, username });
 
     socket.on("user-Joined", handleUserJoined);
     socket.on("offer", handleOffer);
     socket.on("answer", handleAnswer);
     socket.on("ice-candidate", handleIceCandidate);
     socket.on("user-left", handleUserLeft);
+    
 
     return () => {
       Object.values(peerConnections.current).forEach((pc) => pc.close());
       socket.disconnect();
     };
-  }, [roomId, userId, username]);
+  }
+  }, [roomLink, userId, username]);
 
   const handleUserJoined = async (newUser: User) => {
-    addUser(newUser.socketId);
+    fetchJoinedUser(roomLink);
     const PeerConnection = new RTCPeerConnection(config);
     peerConnections.current[newUser.socketId] = PeerConnection;
 
@@ -82,7 +93,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
     PeerConnection.onicecandidate = (event) => {
       if (event.candidate && socketRef.current) {
         socketRef.current.emit("ice-candidate", {
-          roomId,
+          roomLink, 
           candidate: event.candidate,
           sender: socketRef.current.id,
         });
@@ -100,7 +111,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
 
     if (socketRef.current) {
       socketRef.current.emit("offer", {
-        roomId,
+        roomLink,
         offer,
         sender: socketRef.current.id,
         receiver: newUser.socketId,
@@ -127,7 +138,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
     peerConnection.onicecandidate = (event) => {
       if (event.candidate && socketRef.current) {
         socketRef.current.emit("ice-candidate", {
-          roomId,
+          roomLink,
           candidate: event.candidate,
           sender: socketRef.current.id,
         });
@@ -153,7 +164,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
 
       if (socketRef.current) {
         socketRef.current.emit("answer", {
-          roomId,
+          roomLink,
           answer,
           sender: socketRef.current.id,
         });
@@ -196,7 +207,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
   };
 
   const handleUserLeft = ({ socketId }: { socketId: string }) => {
-    removeUser(socketId);
+    removeUser(userName);
     const peerConnection = peerConnections.current[socketId];
     if (peerConnection) {
       peerConnection.close();
@@ -248,7 +259,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
   return (
     <div className="flex flex-col items-center h-screens p-4">
       <h1 className="text-xs font-bold text-gray-800 mb-3">
-        Room: <span className="text-indigo-500">{roomId}</span>
+        Room: <span className="text-indigo-500">{roomLink}</span>
       </h1>
 
       <div className="mb-2">
@@ -263,7 +274,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
         <div className="w-50 p-6 bg-white shadow-lg rounded-lg bg-red-200">
           <div className="flex justify-center">
             <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg">
-              <svg
+              {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -276,7 +287,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
                   stroke-linejoin="round"
                   d="M15 10l4.553-4.553a2 2 0 012.829 0L23 7.174a2 2 0 010 2.829L18.447 14M5.342 14l-.342.342a2 2 0 000 2.828l2.828 2.828a2 2 0 002.829 0l.343-.343m3.182-8.487L14 9.174a2 2 0 01.828-.828m-.828.828L9.553 14.553a2 2 0 01-2.829 0l-.343-.343m.828-.828L3.447 10.447a2 2 0 010-2.829l2.828-2.828a2 2 0 012.829 0L10 5.342"
                 />
-              </svg>
+              </svg> */}
             </div>
           </div>
           <h2 className="mt-6 text-center text-xl font-semibold text-gray-800">
@@ -310,14 +321,14 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
                 className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-100"
               >
                 <span className="text-gray-700 font-medium">{user}</span>
-                <svg
+                {/* <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
                   viewBox="0 0 16 16"
                   className="w-5 h-5 text-gray-600"
                 >
                   <path d="M8 11a3 3 0 0 0 3-3V4a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3zm4-3a4 4 0 0 1-8 0H3a5 5 0 0 0 10 0h-1zm-4 4a5.001 5.001 0 0 0 4.546-2.914c.178.25.285.57.285.914v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1c0-.345.107-.664.285-.914A5.001 5.001 0 0 0 8 12zm1 3a1 1 0 0 1-2 0h2z" />
-                </svg>
+                </svg> */}
               </li>
             ))}
           </ul>

@@ -165,6 +165,7 @@ const useStore = create<StoreState>()(
         try{
           const response = await getRoomDetail(roomId);
           const res = response.users.map((user: any) => (user.username));
+          console.log('this is a result', res);
           set({joinedUser: res})
         }catch(err) {
           console.log("something wrong while fetching the users");
