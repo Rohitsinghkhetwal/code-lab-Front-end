@@ -205,19 +205,19 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   }
 
   const leaveRoom = async(roomID: string, userID: string) => {
-    const { localStream, clearLocalStream, clearJoinedUser } = useStore.getState();
-    console.log("Local Stream", localStream);
+    const { localStream, clearLocalStream, removeUser, users } = useStore.getState();
+    const name = users[0]?.user?.username;
     try {
 
       if(localStream instanceof MediaStream) {
         localStream.getTracks().forEach((track) => track.stop());
         clearLocalStream();
       }
-      const leave_room = await LeaveRoom(roomID, userID);
-      console.log("Hi you lefting the room after consoling", leave_room);
+      await LeaveRoom(roomID, userID);
       toast.success("You left the room");
       clearLink();
-      clearJoinedUser()
+      removeUser(name);
+      
       router.push("/");
     }catch(err) {
       toast.error("Something wrong while leaving the room")

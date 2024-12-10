@@ -1,318 +1,292 @@
-"use client";
-
+// components/MultiUserVoiceCall.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import useStore from "@/Store/Store";
 
-interface User {
-  userId: string;
-  username: string | null;
-  socketId: string;
-}
+type RemoteStreams = {
+  [socketId: string]: MediaStream;
+};
 
-// interface AudioCallProps {
-//   roomId: string;
-//   userId: string;
-//   username: string | null;
-// }
+type PeerConnections = {
+  [socketId: string]: RTCPeerConnection;
+};
 
 const AudioCall: React.FC = () => {
-
-  const {
-    setLocalStream,
-    joinedUser,
-    addUser,
-    removeUser,
-    roomLink,
-    users,
-    fetchJoinedUser
-  } = useStore();
+  const { users, roomLink, joinedUser, fetchJoinedUser, removeUser } = useStore();
 
   const userId = users[0]?.user?._id;
-  const userName = users[0]?.user?.username;
-  console.log("AUDIO CALL COMPONENT USERID", userId)
-  
-  const username = null
+  const username = null;
+  const name = users[0]?.user?.username;
 
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStreams, setRemoteStreams] = useState<RemoteStreams>({});
+  const peerConnections = useRef<PeerConnections>({});
+  const socket = useRef<Socket | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
 
-  if (!username && !userId) {
-    throw new Error("Either username or userId must be provided.");
-  }
-  if (username && userId) {
-    throw new Error("Only one of username or userId should be provided.");
-  }
-
-
-  const [muted, setMuted] = useState(false);
-
-  const localStreamRef = useRef<HTMLAudioElement | null>(null);
-  const localStream = useRef<MediaStream | null>(null);
-  const remoteStream = useRef<{ [socketId: string]: MediaStream }>({});
-  const peerConnections = useRef<{ [socketId: string]: RTCPeerConnection }>({});
-  const socketRef = useRef<Socket | null>(null);
-
-  const config: RTCConfiguration = {
-    iceServers: [
-      {
-        urls: "stun:stun.l.google.com:19302", // stun server
-      },
-    ],
-  };
-
+  // Initialize Socket and Capture Audio
   useEffect(() => {
-    if(!socketRef.current) {
-    const socket = io("https://codelab-backend-mx5k.onrender.com");
-    socketRef.current = socket;
-
-    socket.emit("join-room", { roomLink, userId, username });
-
-    socket.on("user-Joined", handleUserJoined);
-    socket.on("offer", handleOffer);
-    socket.on("answer", handleAnswer);
-    socket.on("ice-candidate", handleIceCandidate);
-    socket.on("user-left", handleUserLeft);
-    
-
-    return () => {
-      Object.values(peerConnections.current).forEach((pc) => pc.close());
-      socket.disconnect();
-    };
-  }
-  }, [roomLink, userId, username]);
-
-  const handleUserJoined = async (newUser: User) => {
-    fetchJoinedUser(roomLink);
-    const PeerConnection = new RTCPeerConnection(config);
-    peerConnections.current[newUser.socketId] = PeerConnection;
-
-    const stream = await getLocalStream();
-    stream
-      .getTracks()
-      .forEach((track) => PeerConnection.addTrack(track, stream));
-
-    PeerConnection.onicecandidate = (event) => {
-      if (event.candidate && socketRef.current) {
-        socketRef.current.emit("ice-candidate", {
-          roomLink, 
-          candidate: event.candidate,
-          sender: socketRef.current.id,
-        });
-      }
-    };
-
-    PeerConnection.ontrack = (event) => {
-      const [stream] = event.streams;
-      remoteStream.current[newUser.socketId] = stream;
-      updateRemoteStreams();
-    };
-
-    const offer = await PeerConnection.createOffer();
-    await PeerConnection.setLocalDescription(offer);
-
-    if (socketRef.current) {
-      socketRef.current.emit("offer", {
-        roomLink,
-        offer,
-        sender: socketRef.current.id,
-        receiver: newUser.socketId,
-      });
-    }
-  };
-
-  const handleOffer = async ({
-    offer,
-    sender,
-  }: {
-    offer: RTCSessionDescriptionInit;
-    sender: string;
-  }) => {
-    const peerConnection =
-      peerConnections.current[sender] || new RTCPeerConnection(config);
-    peerConnections.current[sender] = peerConnection;
-
-    const stream = await getLocalStream();
-    stream
-      .getTracks()
-      .forEach((track) => peerConnection.addTrack(track, stream));
-
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate && socketRef.current) {
-        socketRef.current.emit("ice-candidate", {
-          roomLink,
-          candidate: event.candidate,
-          sender: socketRef.current.id,
-        });
-      }
-    };
-
-    peerConnection.ontrack = (event) => {
-      const [stream] = event.streams;
-      remoteStream.current[sender] = stream;
-      updateRemoteStreams();
-    };
-
-    try {
-      if(peerConnection.signalingState !== "have-local-offer") {
-        console.log("cannot set remote description in signailing state", peerConnection.signalingState)
-
-      }
-      await peerConnection.setRemoteDescription(
-        new RTCSessionDescription(offer)
-      );
-      const answer = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answer);
-
-      if (socketRef.current) {
-        socketRef.current.emit("answer", {
-          roomLink,
-          answer,
-          sender: socketRef.current.id,
-        });
-      }
-    } catch (err) {
-      console.log("Error handling offer", err);
-    }
-  };
-
-  const handleAnswer = async ({
-    answer,
-    sender,
-  }: {
-    answer: RTCSessionDescriptionInit;
-    sender: string;
-  }) => {
-    const peerConnection = peerConnections.current[sender];
-    if (peerConnection) {
-      await peerConnection.setRemoteDescription(
-        new RTCSessionDescription(answer)
-      );
-    }
-  };
-
-  const handleIceCandidate = async ({
-    candidate,
-    sender,
-  }: {
-    candidate: RTCIceCandidate;
-    sender: string;
-  }) => {
-    const peerConnection = peerConnections.current[sender];
-    if (peerConnection) {
-      try {
-        await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-      } catch (err) {
-        console.log("failed to add peer connection ", err);
-      }
-    }
-  };
-
-  const handleUserLeft = ({ socketId }: { socketId: string }) => {
-    removeUser(userName);
-    const peerConnection = peerConnections.current[socketId];
-    if (peerConnection) {
-      peerConnection.close();
-      delete peerConnections.current[socketId];
+    if (!roomLink) {
+      console.error("Room ID is required to join a call.");
+      return;
     }
 
-    delete remoteStream.current[socketId];
-    updateRemoteStreams();
-  };
+    socket.current = io("https://codelab-backend-mx5k.onrender.com"); // Replace with your backend URL
 
-  const getLocalStream = async (): Promise<MediaStream> => {
-    if (!localStream.current) {
+    const captureAudio = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
-        localStream.current = stream;
         setLocalStream(stream);
-      } catch (err) {
-        console.log("error accessing microphone", err);
-        throw new Error("Could not access microphone");
+      } catch (error) {
+        console.error("Error accessing audio stream", error);
       }
-    }
-    return localStream.current;
-  };
+    };
 
-  const updateRemoteStreams = () => {
-    const combinedStream = new MediaStream();
-    Object.values(remoteStream.current).forEach((stream) => {
-      stream
-        .getAudioTracks()
-        .forEach((track) => combinedStream.addTrack(track));
+    captureAudio();
+
+    return () => {
+      if (socket.current) {
+        socket.current.disconnect();
+      }
+      Object.values(peerConnections.current).forEach((pc) => pc.close());
+      peerConnections.current = {};
+    };
+  }, [roomLink]);
+
+  // Handle Socket Events
+  useEffect(() => {
+    if (!socket.current || !localStream) return;
+
+    // Join the room
+    socket.current.emit("join-room", { roomLink, username, userId });
+
+    // When a user joins
+    socket.current.on("user-Joined", ({ socketId }: { socketId: string }) => {
+      console.log(`User joined: ${socketId}`);
+      fetchJoinedUser(roomLink);
+
+      if (!peerConnections.current[socketId]) {
+        const peerConnection = createPeerConnection(socketId);
+        peerConnections.current[socketId] = peerConnection;
+
+        peerConnection.createOffer().then((offer) => {
+          peerConnection.setLocalDescription(offer).catch((error) => {
+            console.error("Error setting local description", error);
+          });
+          socket.current?.emit("offer", {
+            roomLink,
+            offer,
+            sender: socket.current.id,
+          });
+        });
+      }
     });
 
-    if (localStreamRef.current) {
-      localStreamRef.current.srcObject = combinedStream;
-    }
+    // Handle received offer
+    socket.current.on(
+      "offer",
+      async ({
+        offer,
+        sender,
+      }: {
+        offer: RTCSessionDescriptionInit;
+        sender: string;
+      }) => {
+        if (!peerConnections.current[sender]) {
+          const peerConnection = createPeerConnection(sender);
+          peerConnections.current[sender] = peerConnection;
+        }
+
+        const peerConnection = peerConnections.current[sender];
+
+        if (peerConnection.signalingState !== "stable") {
+          console.warn(
+            "Unexpected signaling state",
+            peerConnection.signalingState
+          );
+          return;
+        }
+
+        try {
+          await peerConnection.setRemoteDescription(
+            new RTCSessionDescription(offer)
+          );
+          const answer = await peerConnection.createAnswer();
+          await peerConnection.setLocalDescription(answer);
+
+          socket.current?.emit("answer", {
+            roomLink,
+            answer,
+            sender: socket.current.id,
+          });
+        } catch (error) {
+          console.error("Error handling offer", error);
+        }
+      }
+    );
+
+    // Handle received answer
+    socket.current.on(
+      "answer",
+      async ({
+        answer,
+        sender,
+      }: {
+        answer: RTCSessionDescriptionInit;
+        sender: string;
+      }) => {
+        const peerConnection = peerConnections.current[sender];
+        if (
+          peerConnection &&
+          peerConnection.signalingState === "have-local-offer"
+        ) {
+          try {
+            await peerConnection.setRemoteDescription(
+              new RTCSessionDescription(answer)
+            );
+          } catch (error) {
+            console.error("Error setting remote description for answer", error);
+          }
+        }
+      }
+    );
+
+    // Handle ICE candidates
+    socket.current.on(
+      "ice-candidate",
+      async ({
+        candidate,
+        sender,
+      }: {
+        candidate: RTCIceCandidateInit;
+        sender: string;
+      }) => {
+        const peerConnection = peerConnections.current[sender];
+        if (peerConnection) {
+          try {
+            await peerConnection.addIceCandidate(
+              new RTCIceCandidate(candidate)
+            );
+          } catch (error) {
+            console.error("Error adding received ICE candidate", error);
+          }
+        }
+      }
+    );
+
+    // Handle user disconnection
+    socket.current.on("user-left", ({ socketId }: { socketId: string }) => {
+      console.log(`User left: ${socketId}`);
+      removeUser(name);
+      if (peerConnections.current[socketId]) {
+        peerConnections.current[socketId].close();
+        delete peerConnections.current[socketId];
+      }
+      setRemoteStreams((prev) => {
+        const newStreams = { ...prev };
+        delete newStreams[socketId];
+        return newStreams;
+      });
+    });
+
+    return () => {
+      socket.current?.off("user-Joined");
+      socket.current?.off("offer");
+      socket.current?.off("answer");
+      socket.current?.off("ice-candidate");
+      socket.current?.off("user-left");
+    };
+  }, [localStream]);
+
+  // Create a PeerConnection
+  const createPeerConnection = (socketId: string): RTCPeerConnection => {
+    const peerConnection = new RTCPeerConnection();
+
+    // Add local stream tracks to the connection
+    localStream?.getTracks().forEach((track) => {
+      peerConnection.addTrack(track, localStream);
+    });
+
+    // Handle remote tracks
+    peerConnection.ontrack = (event) => {
+      setRemoteStreams((prev) => {
+        const newStream = prev[socketId] || new MediaStream();
+        event.streams[0].getTracks().forEach((track) => {
+          if (!newStream.getTracks().includes(track)) {
+            newStream.addTrack(track);
+          }
+        });
+        return { ...prev, [socketId]: newStream };
+      });
+    };
+
+    // Handle ICE candidates
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.current?.emit("ice-candidate", {
+          roomLink,
+          candidate: event.candidate,
+          sender: socket.current?.id,
+        });
+      }
+    };
+
+    return peerConnection;
   };
 
   const toggleMute = () => {
-    if (localStream.current) {
-      localStream.current.getAudioTracks().forEach((track) => {
+    if (localStream) {
+      localStream.getAudioTracks().forEach((track) => {
         track.enabled = !track.enabled;
       });
-      setMuted((prev) => !prev);
+      setIsMuted((prev) => !prev);
     }
   };
 
   return (
-    <div className="flex flex-col items-center h-screens p-4">
-      <h1 className="text-xs font-bold text-gray-800 mb-3">
-        Room: <span className="text-indigo-500">{roomLink}</span>
-      </h1>
-
-      <div className="mb-2">
-        <audio
-          ref={localStreamRef}
-          autoPlay
-          className="border border-gray-300 rounded-md shadow-md w-64"
-        />
-      </div>
-
-      <div className="flex justify-center items-center bg-gray-100">
-        <div className="w-50 p-6 bg-white shadow-lg rounded-lg bg-red-200">
-          <div className="flex justify-center">
-            <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg">
-              {/* <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                className="w-8 h-8"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 10l4.553-4.553a2 2 0 012.829 0L23 7.174a2 2 0 010 2.829L18.447 14M5.342 14l-.342.342a2 2 0 000 2.828l2.828 2.828a2 2 0 002.829 0l.343-.343m3.182-8.487L14 9.174a2 2 0 01.828-.828m-.828.828L9.553 14.553a2 2 0 01-2.829 0l-.343-.343m.828-.828L3.447 10.447a2 2 0 010-2.829l2.828-2.828a2 2 0 012.829 0L10 5.342"
-                />
-              </svg> */}
-            </div>
-          </div>
-          <h2 className="mt-6 text-center text-xl font-semibold text-gray-800">
-            Audio Call
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-500">
-            Connect with others seamlessly.
-          </p>
-          <div className="flex justify-center items-center">
-            <button
-              onClick={toggleMute}
-              className={`text-center px-6 py-2 text-white font-semibold rounded-md transition-all ${
-                muted
-                  ? "bg-red-500 hover:bg-red-300"
-                  : "bg-green-500 hover:bg-green-600"
-              }`}
-            >
-              {muted ? "Unmute" : "Mute"}
-            </button>
-          </div>
+    <div>
+      <h1 className="text-xl font-bold text-center text-slate-500">Voice Call</h1>
+     
+      {localStream && (
+        <div className="mb-2">
+          <audio
+            ref={(audio) => {
+              if (audio) audio.srcObject = localStream;
+            }}
+            autoPlay
+            className="border border-gray-300 rounded-md shadow-md w-64"
+          />
         </div>
-      </div>
-      {
-        joinedUser.length > 0 && (
-          <div className="bg-white shadow-md rounded-lg p-4  mx-auto my-6">
+      )}
+      
+      {Object.keys(remoteStreams).map((socketId) => (
+        <div key={socketId} className="mb-2">
+          <audio
+            autoPlay
+            ref={(audio) => {
+              if (audio) audio.srcObject = remoteStreams[socketId];
+            }}
+            className="border border-gray-300 rounded-md shadow-md w-64"
+          />
+        </div>
+      ))}
+
+      <button
+        onClick={toggleMute}
+        className={`px-4 py-2 rounded-lg text-white font-bold transition duration-300 ${
+          isMuted ? "bg-red-400 hover:bg-red-400" : "bg-green-500 hover:bg-green-600"
+        }`}
+      >
+        {isMuted ? "Unmute" : "Mute"}
+      </button>
+
+
+      
+
+      {joinedUser.length > 0 && (
+        <div className="bg-white shadow-md rounded-lg p-4  mx-auto my-6">
           <h2 className="text-lg font-bold mb-4 text-gray-800">Joined User</h2>
           <ul>
             {joinedUser.map((user: string, ind: number) => (
@@ -321,24 +295,19 @@ const AudioCall: React.FC = () => {
                 className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-100"
               >
                 <span className="text-gray-700 font-medium">{user}</span>
-                {/* <svg
+                <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
                   viewBox="0 0 16 16"
                   className="w-5 h-5 text-gray-600"
                 >
                   <path d="M8 11a3 3 0 0 0 3-3V4a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3zm4-3a4 4 0 0 1-8 0H3a5 5 0 0 0 10 0h-1zm-4 4a5.001 5.001 0 0 0 4.546-2.914c.178.25.285.57.285.914v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1c0-.345.107-.664.285-.914A5.001 5.001 0 0 0 8 12zm1 3a1 1 0 0 1-2 0h2z" />
-                </svg> */}
+                </svg>
               </li>
             ))}
           </ul>
         </div>
-
-
-        )
-      }
-
-     
+      )}
     </div>
   );
 };
