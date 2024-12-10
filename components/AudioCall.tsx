@@ -17,7 +17,14 @@ interface AudioCallProps {
 }
 
 const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
-  const { setLocalStream, roomLink, fetchJoinedUser, joinedUser } = useStore();
+  const {
+    setLocalStream,
+    roomLink,
+    fetchJoinedUser,
+    joinedUser,
+    addUser,
+    removeUser,
+  } = useStore();
 
   if (!username && !userId) {
     throw new Error("Either username or userId must be provided.");
@@ -63,6 +70,8 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
   }, [roomId, userId, username]);
 
   const handleUserJoined = async (newUser: User) => {
+    addUser(newUser.socketId);
+
     setusers((prev) => [...prev, newUser]);
     const PeerConnection = new RTCPeerConnection(config);
     peerConnections.current[newUser.socketId] = PeerConnection;
@@ -108,7 +117,8 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
     offer: RTCSessionDescriptionInit;
     sender: string;
   }) => {
-    const peerConnection = new RTCPeerConnection(config);
+    const peerConnection =
+      peerConnections.current[sender] || new RTCPeerConnection(config);
     peerConnections.current[sender] = peerConnection;
 
     const stream = await getLocalStream();
@@ -132,16 +142,26 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
       updateRemoteStreams();
     };
 
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
+    try {
+      if(peerConnection.signalingState !== "have-local-offer") {
+        console.log("cannot set remote description in signailing state", peerConnection.signalingState)
 
-    if (socketRef.current) {
-      socketRef.current.emit("answer", {
-        roomId,
-        answer,
-        sender: socketRef.current.id,
-      });
+      }
+      await peerConnection.setRemoteDescription(
+        new RTCSessionDescription(offer)
+      );
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+
+      if (socketRef.current) {
+        socketRef.current.emit("answer", {
+          roomId,
+          answer,
+          sender: socketRef.current.id,
+        });
+      }
+    } catch (err) {
+      console.log("Error handling offer", err);
     }
   };
 
@@ -178,6 +198,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
   };
 
   const handleUserLeft = ({ socketId }: { socketId: string }) => {
+    removeUser(socketId);
     setusers((prev) => prev.filter((user) => user.socketId !== socketId));
     const peerConnection = peerConnections.current[socketId];
     if (peerConnection) {
@@ -226,7 +247,6 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
       setMuted((prev) => !prev);
     }
   };
-
 
   return (
     <div className="flex flex-col items-center h-screens p-4">

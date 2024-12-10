@@ -218,7 +218,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   }
 
   const leaveRoom = async(roomID: string, userID: string) => {
-    const { localStream, clearLocalStream } = useStore.getState();
+    const { localStream, clearLocalStream, clearJoinedUser } = useStore.getState();
     console.log("Local Stream", localStream);
     try {
 
@@ -231,6 +231,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
       console.log("Hi you lefting the room after consoling", leave_room);
       toast.success("You left the room");
       clearLink();
+      clearJoinedUser()
       router.push("/");
     }catch(err) {
       toast.error("Something wrong while leaving the room")

@@ -38,6 +38,8 @@ interface createRoomProps {
 interface StoreState {
   users: User[],
   joinedUser: string[],
+  addUser: (username: string) => void,
+  removeUser: (username: string) => void,
   roomLink: string,
   rooms: createRoomProps[];
   LogInUser: (user: UserLoginProps) => Promise<UserCookiesProps[]>;
@@ -51,6 +53,7 @@ interface StoreState {
   setLocalStream: (stream: MediaStream) => void
   clearLocalStream: () => void
   fetchJoinedUser: (roomLink: string) => Promise<void>
+  clearJoinedUser: () => void
 }
 
 const useStore = create<StoreState>()(
@@ -165,7 +168,14 @@ const useStore = create<StoreState>()(
           throw err;
         }
 
-      }
+      },
+      addUser: (user) => set((state) => ({ joinedUser: [...state.joinedUser, user]})),
+
+      removeUser: (username: string) => set((state) => ({ joinedUser: state.joinedUser.filter((user) => user !== username)})),
+
+      clearJoinedUser: () => {
+        set({ joinedUser: []})
+      },
       
     }),
     {
