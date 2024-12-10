@@ -19,8 +19,6 @@ interface AudioCallProps {
 const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
   const {
     setLocalStream,
-    roomLink,
-    fetchJoinedUser,
     joinedUser,
     addUser,
     removeUser,
@@ -33,8 +31,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
     throw new Error("Only one of username or userId should be provided.");
   }
 
-  //audio call functionality
-  const [users, setusers] = useState<User[]>([]);
+
   const [muted, setMuted] = useState(false);
 
   const localStreamRef = useRef<HTMLAudioElement | null>(null);
@@ -71,8 +68,6 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
 
   const handleUserJoined = async (newUser: User) => {
     addUser(newUser.socketId);
-
-    setusers((prev) => [...prev, newUser]);
     const PeerConnection = new RTCPeerConnection(config);
     peerConnections.current[newUser.socketId] = PeerConnection;
 
@@ -199,7 +194,6 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
 
   const handleUserLeft = ({ socketId }: { socketId: string }) => {
     removeUser(socketId);
-    setusers((prev) => prev.filter((user) => user.socketId !== socketId));
     const peerConnection = peerConnections.current[socketId];
     if (peerConnection) {
       peerConnection.close();

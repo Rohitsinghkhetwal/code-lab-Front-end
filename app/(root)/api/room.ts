@@ -24,8 +24,6 @@ export const AddUserToRoom = async (
 ) => {
   try {
     const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/room/join-room/${roomId}`;
-    // meeting link will be come from backend and
-    // userId will be the users id will come from justand
     const data = await axios.post(
       url,
       {

@@ -68,8 +68,6 @@ const useStore = create<StoreState>()(
         set({ Loading: true });
         try {
           const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/v1/users/login`;
-          
-          //const url = "http://localhost:9000/api/v1/users/login";
           const result = await axios.post(
             url,
             {

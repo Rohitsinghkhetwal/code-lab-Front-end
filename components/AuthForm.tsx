@@ -16,8 +16,7 @@ import useStore from "@/Store/Store";
 const AuthForm = ({ type }: { type: string }) => {
   const router = useRouter();
 
-  const { LogInUser, Loading, SignUpUser, users} = useStore();
-  console.log("THIS IS THE LOADING STATE OF A FORM", Loading)
+  const { LogInUser, Loading, SignUpUser} = useStore();
 
   
 
@@ -52,7 +51,6 @@ const AuthForm = ({ type }: { type: string }) => {
 
       if (type === "sign-in") {
         const result = await LogInUser(values);
-        console.log("this is the USER from sign in ", result);
         if(result.length === 0) {
           toast.error("Wrong username or Password!");
           return;
@@ -121,7 +119,6 @@ const AuthForm = ({ type }: { type: string }) => {
           </div>
         </form>
 
-        {/* footer section here */}
         <footer className="flex justify-center gap-1">
           <p className="text-14 font-normal text-slate-900">
             {type === "sign-in"

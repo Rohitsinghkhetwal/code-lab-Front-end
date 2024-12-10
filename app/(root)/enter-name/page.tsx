@@ -3,38 +3,21 @@ import useStore from '@/Store/Store';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
-import { AddUserToRoom, checkUserLoggedInorNot, getRoomDetail } from '../api/room';
+import { AddUserToRoom, checkUserLoggedInorNot } from '../api/room';
 
 
 const NameComponent = () => {
-
-  // fisrt I have to call the createRoom api and then i will get the room link from backend and then I have to send the userid and username to backend 
-  // show that user is logged in or not 
-  // if user is logged in we will generate the roomID through backend 
-  // and userId that will come from zustand of loggedin User
-  // and if user is not logged in we will ask the name of the user nad the give it roomId 
-  // AND THEN MEETING WILL BE JOINED 
-  // how to update presence we will hit the getall user api and then we will pass to the api/auth component and then it should work fine   
-  //hostId id of the user if loggedIn username name of the user
-  // roomId id in prams 
-  
-  // if user is logged in join the room Immediately
-  // if it is no loggedIn ask him name
-  const { CreateRoom , roomLink, users, updateRoomLink:updateLink } = useStore();
+  const { CreateRoom , users, updateRoomLink:updateLink } = useStore();
   const hostId = (users[0] as any)?.user?._id;
 
 
 
   const router = useRouter();
-  //this
-  const [link, setLink] = useState<string>("");
   const [username, setUsername] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false);
 
-
-  // check LoggedIn status
 
   const loggedInStatus = async() => {
     const checkUser = await checkUserLoggedInorNot();
@@ -53,7 +36,7 @@ const NameComponent = () => {
       setIsModalOpen(true);
 
       if(isLoggedIn && roomId) {
-        const result = await AddUserToRoom(hostId, roomId, username)
+        await AddUserToRoom(hostId, roomId, username)
         if(roomId) {
           updateLink(roomId)
           toast.success("Joining the room ...")
@@ -73,9 +56,7 @@ const NameComponent = () => {
   const handleCreateRoom = async() => {
     try {
       const room = await CreateRoom();
-      console.log("this is the room from handle create room", room);
         router.push(`/${room}`)
-      // start from here 
       toast.success("Room created success !");
       
     }catch(err) {
@@ -87,8 +68,6 @@ const NameComponent = () => {
 
   const handleSubmit = () => {
     try{
-      
-      //logic
       if(!roomId) {
         toast.error("Please Enter the roomID..")
         return;

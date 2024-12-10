@@ -32,8 +32,6 @@ import { LeaveRoom } from "@/app/(root)/api/room";
 import { useRouter } from "next/navigation";
 
 
-// Collaborative text editor with simple rich text, live cursors, and live avatars
-
 export function CollaborativeEditor() {
 
   const room = useRoom();
@@ -42,10 +40,6 @@ export function CollaborativeEditor() {
 
   const [provider, setProvider] = useState<any>();
 
-  
-
-
-  // Set up Liveblocks Yjs provider
 
   useEffect(() => {
 
@@ -92,7 +86,6 @@ type EditorProps = {
 
 function TiptapEditor({ doc, provider }: EditorProps) {
 
-  // Get user info from Liveblocks authentication endpoint
   const clearLink = useStore((state) => state.ClearRoomLink);
 
   const userInfo = useSelf((me) => me.info);
@@ -104,12 +97,6 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   const storedUserID = (users[0] as any)?.user?._id;
   
 
- 
-
-  
-
-
-  // Set up editor with plugins, and place user info into Yjs awareness and cursors
 
   const editor = useEditor({
 
@@ -225,7 +212,6 @@ function TiptapEditor({ doc, provider }: EditorProps) {
       if(localStream instanceof MediaStream) {
         localStream.getTracks().forEach((track) => track.stop());
         clearLocalStream();
-        console.log("microphone turned off")
       }
       const leave_room = await LeaveRoom(roomID, userID);
       console.log("Hi you lefting the room after consoling", leave_room);
@@ -235,7 +221,6 @@ function TiptapEditor({ doc, provider }: EditorProps) {
       router.push("/");
     }catch(err) {
       toast.error("Something wrong while leaving the room")
-      console.log("Somethig went wrong here !");
       throw err;
 
     }

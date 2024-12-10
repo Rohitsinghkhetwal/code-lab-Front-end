@@ -9,7 +9,6 @@ import useStore from "@/Store/Store";
 export function Providers({ children }: PropsWithChildren) {
   const { roomLink } = useStore();
 
-  console.log("Providers roomlink main thing", roomLink);
   useEffect(() => {
     const getId = async() => {
       try {
@@ -27,7 +26,6 @@ export function Providers({ children }: PropsWithChildren) {
         console.log("failed to send the data to server");
       }else {
         const data = await response.json();
-        console.log("server response", data);
       }
 
       }catch(err) {
