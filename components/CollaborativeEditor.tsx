@@ -183,7 +183,7 @@ function TiptapEditor({ doc, provider }: EditorProps) {
   const handleDownloadPdf = () => {
     if (editor) {
       const data = editor.getJSON();
-      let res = data.content;
+      const res = data.content;
       const extractedText = ExtractFiles(res);
       const pdf = new jsPDF();
       pdf.text(extractedText, 10, 10);

@@ -25,7 +25,7 @@ export function Providers({ children }: PropsWithChildren) {
       if(!response.ok) {
         console.log("failed to send the data to server");
       }else {
-        const data = await response.json();
+         await response.json();
       }
 
       }catch(err) {

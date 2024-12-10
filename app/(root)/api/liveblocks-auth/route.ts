@@ -36,8 +36,7 @@ export async function POST(request: NextRequest) {
 
 
 
-  //const roomId = '9zy7qlJrgmeeZaPTrU8CM0D4E8R8EpFi6PIG2mBh'
- let getDetail = await getRoomDetail(room);
+ const getDetail = await getRoomDetail(room);
  const res = getDetail.users;
  const User_info = res.map((items: any) => (items.username));
 
@@ -49,7 +48,7 @@ export async function POST(request: NextRequest) {
 
  const userId = Math.floor(Math.random() * User_info.length);
 
-  let session = liveblocks.prepareSession(`user-${User_info[userId]}`, {
+  const session = liveblocks.prepareSession(`user-${User_info[userId]}`, {
     userInfo: {
       name: User_info[userId],
       color: "#D583F0",
