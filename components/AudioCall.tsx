@@ -17,13 +17,15 @@ interface AudioCallProps {
 }
 
 const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
+
+  console.log("this is the userId AUDIOCALL",userId);
+  console.log("this is the room USERID" , roomId);
   const {
     setLocalStream,
     joinedUser,
     addUser,
     removeUser,
   } = useStore();
-  console.log("this is joined user", joinedUser)
 
   if (!username && !userId) {
     throw new Error("Either username or userId must be provided.");

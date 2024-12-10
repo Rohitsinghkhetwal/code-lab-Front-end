@@ -1,20 +1,21 @@
-"use client"
-import AudioCall from '@/components/AudioCall'
-import useStore from '@/Store/Store'
-import React from 'react'
+"use client";
+import AudioCall from "@/components/AudioCall";
+import React from "react";
 
-const Chats = () => {
-  const { users , roomLink} = useStore();
-  console.log('users', JSON.stringify(users, null, 2))
-  const userId = users[0]?.user?._id;
-  const name = null
-
+const Chats = ({
+  roomId,
+  userId,
+  name,
+}: {
+  roomId: string;
+  userId: string;
+  name: string | null;
+}) => {
   return (
-    <div className='h-fit'>
-      <AudioCall roomId={roomLink} userId={userId} username={name}/>
-      
+    <div className="h-fit">
+      <AudioCall roomId={roomId} userId={userId} username={name} />
     </div>
-  )
-}
+  );
+};
 
-export default Chats
+export default Chats;
