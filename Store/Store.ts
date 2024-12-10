@@ -10,6 +10,11 @@ interface User {
   email: string;
 }
 
+interface userResponse {
+  user: User;
+  message: string;
+}
+
 interface UserLoginProps {
   email: string;
   password: string;
@@ -36,7 +41,7 @@ interface createRoomProps {
 // store state of our state
 
 interface StoreState {
-  users: User[],
+  users: userResponse[],
   joinedUser: string[],
   addUser: (username: string) => void,
   removeUser: (username: string) => void,

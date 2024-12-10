@@ -23,6 +23,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
     addUser,
     removeUser,
   } = useStore();
+  console.log("this is joined user", joinedUser)
 
   if (!username && !userId) {
     throw new Error("Either username or userId must be provided.");
@@ -257,7 +258,7 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
       </div>
 
       <div className="flex justify-center items-center bg-gray-100">
-        <div className="w-80 p-6 bg-white shadow-lg rounded-lg bg-red-200">
+        <div className="w-50 p-6 bg-white shadow-lg rounded-lg bg-red-200">
           <div className="flex justify-center">
             <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg">
               <svg
@@ -296,28 +297,35 @@ const AudioCall: React.FC<AudioCallProps> = ({ roomId, userId, username }) => {
           </div>
         </div>
       </div>
-
-      <div className="bg-white shadow-md rounded-lg p-4  mx-auto my-6">
-        <h2 className="text-lg font-bold mb-4 text-gray-800">Joined User</h2>
-        <ul>
-          {joinedUser.map((user: string, ind: number) => (
-            <li
-              key={ind}
-              className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-100"
-            >
-              <span className="text-gray-700 font-medium">{user}</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-                className="w-5 h-5 text-gray-600"
+      {
+        joinedUser.length > 0 && (
+          <div className="bg-white shadow-md rounded-lg p-4  mx-auto my-6">
+          <h2 className="text-lg font-bold mb-4 text-gray-800">Joined User</h2>
+          <ul>
+            {joinedUser.map((user: string, ind: number) => (
+              <li
+                key={ind}
+                className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-100"
               >
-                <path d="M8 11a3 3 0 0 0 3-3V4a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3zm4-3a4 4 0 0 1-8 0H3a5 5 0 0 0 10 0h-1zm-4 4a5.001 5.001 0 0 0 4.546-2.914c.178.25.285.57.285.914v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1c0-.345.107-.664.285-.914A5.001 5.001 0 0 0 8 12zm1 3a1 1 0 0 1-2 0h2z" />
-              </svg>
-            </li>
-          ))}
-        </ul>
-      </div>
+                <span className="text-gray-700 font-medium">{user}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  className="w-5 h-5 text-gray-600"
+                >
+                  <path d="M8 11a3 3 0 0 0 3-3V4a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3zm4-3a4 4 0 0 1-8 0H3a5 5 0 0 0 10 0h-1zm-4 4a5.001 5.001 0 0 0 4.546-2.914c.178.25.285.57.285.914v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1c0-.345.107-.664.285-.914A5.001 5.001 0 0 0 8 12zm1 3a1 1 0 0 1-2 0h2z" />
+                </svg>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+
+        )
+      }
+
+     
     </div>
   );
 };

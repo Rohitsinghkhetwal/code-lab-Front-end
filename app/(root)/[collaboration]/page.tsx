@@ -22,6 +22,7 @@ const Collaborations = () => {
       <aside className="w-full lg:w-[26%] p-4 border-t lg:border-t-0 lg:border-l order-2">
         <Chats />
       </aside>
+
     </div>
   );
 };

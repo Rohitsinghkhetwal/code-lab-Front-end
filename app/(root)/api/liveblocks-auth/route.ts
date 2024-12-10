@@ -15,10 +15,6 @@ const liveblocks = new Liveblocks({
 
 export async function POST(request: NextRequest) {
 
-  // const Room = await request.json();
-  // const { roomLink } = Room;
-
-  //console.log("this is the roomLink", roomLink)
   const roomLINK = await request.json();
   
   const { room } = roomLINK 
