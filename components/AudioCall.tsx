@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { FaPhoneAlt } from "react-icons/fa";
 import useStore from "@/Store/Store";
 
 type RemoteStreams = {
@@ -29,7 +30,7 @@ const AudioCall: React.FC = () => {
       return;
     }
 
-    socket.current = io("https://codelab-backend-mx5k.onrender.com"); // Replace with your backend URL
+    socket.current = io("http://localhost:9000"); // Replace with your backend URL
 
     const captureAudio = async () => {
       try {
@@ -61,23 +62,30 @@ const AudioCall: React.FC = () => {
     socket.current.emit("join-room", { roomLink, username, userId });
 
     // When a user joins
-    socket.current.on("user-Joined", ({ socketId }: { socketId: string }) => {
+    socket.current.on("user-Joined", async({ socketId }: { socketId: string }) => {
       fetchJoinedUser(roomLink);
 
       if (!peerConnections.current[socketId]) {
         const peerConnection = createPeerConnection(socketId);
         peerConnections.current[socketId] = peerConnection;
 
-        peerConnection.createOffer().then((offer) => {
-          peerConnection.setLocalDescription(offer).catch((error) => {
-            console.error("Error setting local description", error);
-          });
-          socket.current?.emit("offer", {
-            roomLink,
-            offer,
-            sender: socket.current.id,
-          });
-        });
+        try {
+          if (peerConnection.signalingState === "stable") {
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+    
+            socket.current?.emit("offer", {
+              roomLink,
+              offer,
+              sender: socket.current.id,
+            });
+          } else {
+            console.warn("Signaling state not stable:", peerConnection.signalingState);
+          }
+        } catch (error) {
+          console.error("Error creating or sending offer:", error);
+        }
+      
       }
     });
 
@@ -97,6 +105,11 @@ const AudioCall: React.FC = () => {
         }
 
         const peerConnection = peerConnections.current[sender];
+
+        if (!localStream) {
+          console.error("Local stream is not initialized");
+          return;
+        }
 
         if (peerConnection.signalingState !== "stable") {
           console.warn(
@@ -200,6 +213,12 @@ const AudioCall: React.FC = () => {
   const createPeerConnection = (socketId: string): RTCPeerConnection => {
     const peerConnection = new RTCPeerConnection();
 
+    if (!localStream) {
+      console.error("Local stream is not initialized");
+      return peerConnection;
+    }
+
+
     // Add local stream tracks to the connection
     localStream?.getTracks().forEach((track) => {
       peerConnection.addTrack(track, localStream);
@@ -209,11 +228,23 @@ const AudioCall: React.FC = () => {
     peerConnection.ontrack = (event) => {
       setRemoteStreams((prev) => {
         const newStream = prev[socketId] || new MediaStream();
+
         event.streams[0].getTracks().forEach((track) => {
           if (!newStream.getTracks().includes(track)) {
             newStream.addTrack(track);
           }
         });
+
+        let audioElement = document.getElementById(`audio-${socketId}`) as HTMLAudioElement
+
+        if(!audioElement) {
+          audioElement = document.createElement("audio");
+          audioElement.id = `audio-${socketId}`
+          audioElement.autoplay = true;
+          document.body.appendChild(audioElement)
+        }
+        audioElement.srcObject = newStream
+
         return { ...prev, [socketId]: newStream };
       });
     };
@@ -243,32 +274,13 @@ const AudioCall: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-center text-slate-500">Voice Call</h1>
-     
-      {localStream && (
-        <div className="mb-2">
-          <audio
-            ref={(audio) => {
-              if (audio) audio.srcObject = localStream;
-            }}
-            autoPlay
-            className="border border-gray-300 rounded-md shadow-md w-64"
-          />
-        </div>
-      )}
-      
-      {Object.keys(remoteStreams).map((socketId) => (
-        <div key={socketId} className="mb-2">
-          <audio
-            autoPlay
-            ref={(audio) => {
-              if (audio) audio.srcObject = remoteStreams[socketId];
-            }}
-            className="border border-gray-300 rounded-md shadow-md w-64"
-          />
-        </div>
-      ))}
-
+      <h1 className="text-xl font-bold text-center text-slate-500 my-4">Voice Call</h1>
+      <div className="flex items-center justify-center space-x-4 mb-4">
+      <button
+        className="p-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md focus:outline-none"
+      >
+        <FaPhoneAlt className="text-lg" />
+      </button>
       <button
         onClick={toggleMute}
         className={`px-4 py-2 rounded-lg text-white font-bold transition duration-300 ${
@@ -279,7 +291,9 @@ const AudioCall: React.FC = () => {
       </button>
 
 
-      
+
+      </div>
+
 
       {joinedUser.length > 0 && (
         <div className="bg-white shadow-md rounded-lg p-4  mx-auto my-6">

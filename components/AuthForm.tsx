@@ -42,7 +42,7 @@ const AuthForm = ({ type }: { type: string }) => {
         }
          const UserInfo = await SignUpUser(data)
          if(UserInfo) {
-          toast.success("Success ! Please login");
+          toast.success("Sign-up successful please login ! ");
           router.push("/sign-in");
           
          }
