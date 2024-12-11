@@ -289,10 +289,15 @@ const AudioCall: React.FC = () => {
       >
         {isMuted ? "Unmute" : "Mute"}
       </button>
-
-
-
       </div>
+
+      {Object.keys(remoteStreams).map((socketId) => (
+        <audio
+          key={socketId}
+          id={`audio-${socketId}`}
+          autoPlay
+        />
+      ))}
 
 
       {joinedUser.length > 0 && (
