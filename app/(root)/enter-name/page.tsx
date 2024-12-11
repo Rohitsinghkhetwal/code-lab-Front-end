@@ -1,7 +1,7 @@
 "use client"
 import useStore from '@/Store/Store';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { AddUserToRoom, checkUserLoggedInorNot } from '../api/room';
 
@@ -88,6 +88,24 @@ const NameComponent = () => {
       console.log("something went wrong here !")
     }
   }
+
+  useEffect(() => {
+    const auth = async() => {
+      try {
+        const response = await checkUserLoggedInorNot();
+        const loginStatus = response?.data?.LoggedIn;
+
+        if(!loginStatus) {
+          toast.success("Sign in first");
+          router.replace("/sign-in")
+        }
+      }catch(err) {
+        console.log("something went wrong ", err);
+        router.replace("/sign-in");
+      }
+    }
+    auth();
+  },[router])
 
 
 

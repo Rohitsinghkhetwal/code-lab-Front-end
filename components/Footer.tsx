@@ -35,13 +35,13 @@ const Footer = ({type='desktop'}:footerProps) => {
         <h2 className='text-slate-700 text-16 truncate font-bold'>
           {Username?.username}
         </h2>
-        <p className='text-14 truncate font-normal text-slate-700'>
+        <p className='text-14 truncate font-normal text-slate-700 w-[140px]'>
           {Username?.email}
 
         </p>
 
       </div>
-      <div className='relative size-12 max-xl:w-full max-xl:flex max-xl:justify-center max-xl:items-center' onClick={handleLogout}>
+      <div className='relative size-12 max-xl:w-full max-xl:flex max-xl:justify-center max-xl:items-center xl:visible' onClick={handleLogout}>
         <Image
         src='icons/logout.svg'
         alt="logout"

@@ -1,4 +1,3 @@
-// components/MultiUserVoiceCall.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import useStore from "@/Store/Store";
@@ -24,7 +23,6 @@ const AudioCall: React.FC = () => {
   const socket = useRef<Socket | null>(null);
   const [isMuted, setIsMuted] = useState(false);
 
-  // Initialize Socket and Capture Audio
   useEffect(() => {
     if (!roomLink) {
       console.error("Room ID is required to join a call.");
@@ -64,7 +62,6 @@ const AudioCall: React.FC = () => {
 
     // When a user joins
     socket.current.on("user-Joined", ({ socketId }: { socketId: string }) => {
-      console.log(`User joined: ${socketId}`);
       fetchJoinedUser(roomLink);
 
       if (!peerConnections.current[socketId]) {
@@ -178,7 +175,6 @@ const AudioCall: React.FC = () => {
 
     // Handle user disconnection
     socket.current.on("user-left", ({ socketId }: { socketId: string }) => {
-      console.log(`User left: ${socketId}`);
       removeUser(name);
       if (peerConnections.current[socketId]) {
         peerConnections.current[socketId].close();

@@ -39,7 +39,6 @@ interface createRoomProps {
 
 
 // store state of our state
-
 interface StoreState {
   users: userResponse[],
   joinedUser: string[],
