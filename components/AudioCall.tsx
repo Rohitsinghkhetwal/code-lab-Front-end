@@ -30,7 +30,7 @@ const AudioCall: React.FC = () => {
       return;
     }
 
-    socket.current = io("http://localhost:9000"); // Replace with your backend URL
+    socket.current = io("https://codelab-backend-mx5k.onrender.com"); // Replace with your backend URL
 
     const captureAudio = async () => {
       try {
